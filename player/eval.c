@@ -190,8 +190,8 @@ int pawnpin(position_t *p, color_t color) {
   
   while (true) {
     sq += beam_of(bdir);
-    if (color_of(sq) == color &&
-        ptype_of(sq) == PAWN) {
+    if (color_of(p->board[sq]) == color &&
+        ptype_of(p->board[sq]) == PAWN) {
         pinned_pawns += 1;
     }
     tbassert(sq < ARR_SIZE && sq >= 0, "sq: %d\n", sq);
