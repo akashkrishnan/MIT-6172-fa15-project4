@@ -531,7 +531,12 @@ victims_t make_move(position_t *old, position_t *p, move_t mv) {
 
   } else {  // we definitely stomped something
     p->victims.stomped = p->board[stomped_sq];
-
+    if (color_of(p->victims.stomped) == WHITE) {
+      p->white_pawn_count -= 1;
+    }
+    else if (color_of(p->victims.stomped) == BLACK) {
+      p->black_pawn_count -= 1;
+    }
     p->key ^= zob[stomped_sq][p->victims.stomped];   // remove from board
     p->board[stomped_sq] = 0;
     p->key ^= zob[stomped_sq][p->board[stomped_sq]];
@@ -566,6 +571,12 @@ victims_t make_move(position_t *old, position_t *p, move_t mv) {
     }
   } else {  // we definitely hit something with laser
     p->victims.zapped = p->board[victim_sq];
+    if (color_of(p->victims.zapped) == WHITE) {
+      p->white_pawn_count -= 1;
+    }
+    else if (color_of(p->victims.zapped) == BLACK) {
+      p->black_pawn_count -= 1;
+    }
     p->key ^= zob[victim_sq][p->victims.zapped];   // remove from board
     p->board[victim_sq] = 0;
     p->key ^= zob[victim_sq][0];

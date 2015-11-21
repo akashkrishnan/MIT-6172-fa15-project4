@@ -29,6 +29,10 @@ static int parse_fen_board(position_t *p, char *fen) {
   fil_t f = -1;
   rnk_t r = BOARD_WIDTH - 1;
 
+  // Count pawns on board
+  uint8_t white_pawn_count = 0;
+  uint8_t black_pawn_count = 0;
+
   // Current and next characters from input FEN description
   char c, next_c;
 
@@ -89,9 +93,11 @@ static int parse_fen_board(position_t *p, char *fen) {
         } else if (next_c == 'W') {  // White Pawn facing NW
           ori = NW;
           typ = PAWN;
+          white_pawn_count += 1;
         } else if (next_c == 'E') {  // White Pawn facing NE
           ori = NE;
           typ = PAWN;
+          white_pawn_count += 1;
         } else {
           fen_error(fen, c_count+1, "Syntax error");
           return 0;
@@ -114,9 +120,11 @@ static int parse_fen_board(position_t *p, char *fen) {
         } else if (next_c == 'w') {  // Black Pawn facing NW
           ori = NW;
           typ = PAWN;
+          black_pawn_count += 1;
         } else if (next_c == 'e') {  // Black Pawn facing NE
           ori = NE;
           typ = PAWN;
+          black_pawn_count += 1;
         } else {
           fen_error(fen, c_count+1, "Syntax error");
           return 0;
@@ -139,9 +147,11 @@ static int parse_fen_board(position_t *p, char *fen) {
         } else if (next_c == 'W') {  // White Pawn facing SW
           ori = SW;
           typ = PAWN;
+          white_pawn_count += 1;
         } else if (next_c == 'E') {  // White Pawn facing SE
           ori = SE;
           typ = PAWN;
+          white_pawn_count += 1;
         } else {
           fen_error(fen, c_count+1, "Syntax error");
           return 0;
@@ -164,9 +174,11 @@ static int parse_fen_board(position_t *p, char *fen) {
         } else if (next_c == 'w') {  // Black Pawn facing SW
           ori = SW;
           typ = PAWN;
+          black_pawn_count += 1;
         } else if (next_c == 'e') {  // Black Pawn facing SE
           ori = SE;
           typ = PAWN;
+          black_pawn_count += 1;
         } else {
           fen_error(fen, c_count+1, "Syntax error");
           return 0;
@@ -264,7 +276,9 @@ static int parse_fen_board(position_t *p, char *fen) {
         break;
     }  // end switch
   }  // end while
-
+  
+  p->white_pawn_count = white_pawn_count;
+  p->black_pawn_count = black_pawn_count;
   if ((f == BOARD_WIDTH - 1) && (r == 0)) {
     return c_count;
   } else {

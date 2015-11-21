@@ -170,36 +170,52 @@ void mark_laser_path(position_t *p, char *laser_map, color_t c,
 
 int pawnpin(position_t *p, color_t color) {
   color_t c = opp_color(color);
-  char laser_map[ARR_SIZE];
-
-  for (int i = 0; i < ARR_SIZE; ++i) {
-    laser_map[i] = 4;   // Invalid square
-  }
-
-  for (fil_t f = 0; f < BOARD_WIDTH; ++f) {
-    for (rnk_t r = 0; r < BOARD_WIDTH; ++r) {
-      laser_map[square_of(f, r)] = 0;
-    }
-  }
-
-  mark_laser_path(p, laser_map, c, 1);  // find path of laser given that you aren't moving
-
-
-
+  
   int pinned_pawns = 0;
+  uint8_t total_pawns;
+  position_t np = *p;
 
-  // Figure out which pawns are not pinned down by the laser.
-  for (fil_t f = 0; f < BOARD_WIDTH; ++f) {
-    for (rnk_t r = 0; r < BOARD_WIDTH; ++r) {
-      if (laser_map[square_of(f, r)] == 0 &&
-          color_of(p->board[square_of(f, r)]) == color &&
-          ptype_of(p->board[square_of(f, r)]) == PAWN) {
+  if (color == WHITE) {
+    total_pawns = p->white_pawn_count;
+  }
+  else {
+    total_pawns = p->black_pawn_count;
+  }
+  // Fire laser, recording in laser_map
+  square_t sq = np.kloc[c];
+  int bdir = ori_of(np.board[sq]);
+
+  tbassert(ptype_of(np.board[sq]) == KING,
+           "ptype: %d\n", ptype_of(np.board[sq]));
+  
+  while (true) {
+    sq += beam_of(bdir);
+    if (color_of(sq) == color &&
+        ptype_of(sq) == PAWN) {
         pinned_pawns += 1;
-      }
+    }
+    tbassert(sq < ARR_SIZE && sq >= 0, "sq: %d\n", sq);
+
+    switch (ptype_of(p->board[sq])) {
+      case EMPTY:  // empty square
+        break;
+      case PAWN:  // Pawn
+        bdir = reflect_of(bdir, ori_of(p->board[sq]));
+        if (bdir < 0) {  // Hit back of Pawn
+          return total_pawns - pinned_pawns;
+        }
+        break;
+      case KING:  // King
+        return total_pawns - pinned_pawns;
+        break;
+      case INVALID:  // Ran off edge of board
+        return total_pawns - pinned_pawns;
+        break;
+      default:  // Shouldna happen, man!
+        tbassert(false, "Not cool, man.  Not cool.\n");
+        break;
     }
   }
-
-  return pinned_pawns;
 }
 
 // MOBILITY heuristic: safe squares around king of color color.
