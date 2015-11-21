@@ -142,6 +142,8 @@ static score_t searchPV(searchNode *node, int depth, uint64_t *node_count_serial
   int num_of_moves = get_sortable_move_list(node, move_list, hash_table_move);
   int num_moves_tried = 0;
 
+  moveEvaluationResult* result = (moveEvaluationResult *) malloc(sizeof(moveEvaluationResult));
+
   // Start searching moves.
   for (int mv_index = 0; mv_index < num_of_moves; mv_index++) {
     // Incrementally sort the move list.
@@ -152,17 +154,17 @@ static score_t searchPV(searchNode *node, int depth, uint64_t *node_count_serial
     num_moves_tried++;
     (*node_count_serial)++;
 
-    moveEvaluationResult result = evaluateMove(node, mv, killer_a, killer_b,
+    result = evaluateMove(node, mv, killer_a, killer_b,
                                                SEARCH_PV,
-                                               node_count_serial);
+                                               node_count_serial,result);
 
-    if (result.type == MOVE_ILLEGAL || result.type == MOVE_IGNORE) {
+    if (result->type == MOVE_ILLEGAL || result->type == MOVE_IGNORE) {
       continue;
     }
 
     // A legal move is a move that's not KO, but when we are in quiescence
     // we only want to count moves that has a capture.
-    if (result.type == MOVE_EVALUATED) {
+    if (result->type == MOVE_EVALUATED) {
       node->legal_move_count++;
     }
 
@@ -171,11 +173,12 @@ static score_t searchPV(searchNode *node, int depth, uint64_t *node_count_serial
       return 0;
     }
 
-    bool cutoff = search_process_score(node, mv, mv_index, &result, SEARCH_PV);
+    bool cutoff = search_process_score(node, mv, mv_index, result, SEARCH_PV);
     if (cutoff) {
       break;
     }
   }
+  free(result);
 
   if (node->quiescence == false) {
     update_best_move_history(&(node->position), node->best_move_index,

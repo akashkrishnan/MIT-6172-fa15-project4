@@ -134,7 +134,6 @@ int mark_laser_path(position_t *p, char *laser_map, color_t c,
                      char mark_mask) {
   int pinned_pawns = 0;
   uint8_t total_pawns;
-  position_t np = *p;
   color_t color = opp_color(c);
 
   if (c == WHITE) { // opposing king pins our pawns 
@@ -145,11 +144,11 @@ int mark_laser_path(position_t *p, char *laser_map, color_t c,
   }
 
   // Fire laser, recording in laser_map
-  square_t sq = np.kloc[c];
-  int bdir = ori_of(np.board[sq]);
+  square_t sq = p->kloc[c];
+  int bdir = ori_of(p->board[sq]);
 
-  tbassert(ptype_of(np.board[sq]) == KING,
-           "ptype: %d\n", ptype_of(np.board[sq]));
+  tbassert(ptype_of(p->board[sq]) == KING,
+           "ptype: %d\n", ptype_of(p->board[sq]));
   laser_map[sq] |= mark_mask;
 
   while (true) {
@@ -384,15 +383,27 @@ score_t eval(position_t *p, bool verbose) {
       laser_map_white[square_of(f, r)] = 0;
     }
   }
-  int black_pawns_unpinned = mark_laser_path(p, laser_map_white, WHITE, 1);  // 1 = path of laser with no moves
-  int white_pawns_unpinned = mark_laser_path(p, laser_map_black, BLACK, 1);  // 1 = path of laser with no moves
 
+  int black_pawns_unpinned = mark_laser_path(p, laser_map_white, WHITE, 1);  // 1 = path of laser with no moves
   
   ev_score_t w_hattackable = HATTACK * h_squares_attackable(p, WHITE);
   score[WHITE] += w_hattackable;
   // if (verbose) {
   //   printf("HATTACK bonus %d for White\n", w_hattackable);
   // }
+
+  // PAWNPIN Heuristic --- is a pawn immobilized by the enemy laser.
+  int b_pawnpin = PAWNPIN * black_pawns_unpinned;
+  score[BLACK] += b_pawnpin;
+
+  int b_mobility = MOBILITY * mobility(p, BLACK);
+  score[BLACK] += b_mobility;
+  // if (verbose) {
+  //   printf("MOBILITY bonus %d for Black\n", b_mobility);
+  // }
+
+  int white_pawns_unpinned = mark_laser_path(p, laser_map_black, BLACK, 1);  // 1 = path of laser with no moves
+  
   ev_score_t b_hattackable = HATTACK * h_squares_attackable(p, BLACK);
   score[BLACK] += b_hattackable;
   // if (verbose) {
@@ -404,17 +415,9 @@ score_t eval(position_t *p, bool verbose) {
   // if (verbose) {
   //   printf("MOBILITY bonus %d for White\n", w_mobility);
   // }
-  int b_mobility = MOBILITY * mobility(p, BLACK);
-  score[BLACK] += b_mobility;
-  // if (verbose) {
-  //   printf("MOBILITY bonus %d for Black\n", b_mobility);
-  // }
-
-  // PAWNPIN Heuristic --- is a pawn immobilized by the enemy laser.
   int w_pawnpin = PAWNPIN * white_pawns_unpinned;
   score[WHITE] += w_pawnpin;
-  int b_pawnpin = PAWNPIN * black_pawns_unpinned;
-  score[BLACK] += b_pawnpin;
+
 
   // score from WHITE point of view
   ev_score_t tot = score[WHITE] - score[BLACK];
