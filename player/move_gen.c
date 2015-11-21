@@ -30,7 +30,7 @@ char *color_to_str(color_t c) {
 // -----------------------------------------------------------------------------
 
 // which color is moving next
-color_t color_to_move_of(position_t *p) {
+inline color_t color_to_move_of(position_t *p) {
   if ((p->ply & 1) == 0) {
     return WHITE;
   } else {
@@ -38,11 +38,11 @@ color_t color_to_move_of(position_t *p) {
   }
 }
 
-color_t color_of(piece_t x) {
+inline color_t color_of(piece_t x) {
   return (color_t) ((x >> COLOR_SHIFT) & COLOR_MASK);
 }
 
-color_t opp_color(color_t c) {
+inline color_t opp_color(color_t c) {
   if (c == WHITE) {
     return BLACK;
   } else {
@@ -51,27 +51,27 @@ color_t opp_color(color_t c) {
 }
 
 
-void set_color(piece_t *x, color_t c) {
+inline void set_color(piece_t *x, color_t c) {
   tbassert((c >= 0) & (c <= COLOR_MASK), "color: %d\n", c);
   *x = ((c & COLOR_MASK) << COLOR_SHIFT) |
       (*x & ~(COLOR_MASK << COLOR_SHIFT));
 }
 
 
-ptype_t ptype_of(piece_t x) {
+inline ptype_t ptype_of(piece_t x) {
   return (ptype_t) ((x >> PTYPE_SHIFT) & PTYPE_MASK);
 }
 
-void set_ptype(piece_t *x, ptype_t pt) {
+inline void set_ptype(piece_t *x, ptype_t pt) {
   *x = ((pt & PTYPE_MASK) << PTYPE_SHIFT) |
       (*x & ~(PTYPE_MASK << PTYPE_SHIFT));
 }
 
-int ori_of(piece_t x) {
+inline int ori_of(piece_t x) {
   return (x >> ORI_SHIFT) & ORI_MASK;
 }
 
-void set_ori(piece_t *x, int ori) {
+inline void set_ori(piece_t *x, int ori) {
   *x = ((ori & ORI_MASK) << ORI_SHIFT) |
       (*x & ~(ORI_MASK << ORI_SHIFT));
 }
@@ -95,7 +95,7 @@ static uint64_t   zob_color;
 uint64_t myrand();
 
 // Zobrist hashing
-uint64_t compute_zob_key(position_t *p) {
+inline uint64_t compute_zob_key(position_t *p) {
   uint64_t key = 0;
   for (fil_t f = 0; f < BOARD_WIDTH; f++) {
     for (rnk_t r = 0; r < BOARD_WIDTH; r++) {
@@ -120,7 +120,7 @@ void init_zob() {
 
 
 // For no square, use 0, which is guaranteed to be off board
-square_t square_of(fil_t f, rnk_t r) {
+inline square_t square_of(fil_t f, rnk_t r) {
   square_t s = ARR_WIDTH * (FIL_ORIGIN + f) + RNK_ORIGIN + r;
   DEBUG_LOG(1, "Square of (file %d, rank %d) is %d\n", f, r, s);
   tbassert((s >= 0) && (s < ARR_SIZE), "s: %d\n", s);
@@ -128,14 +128,14 @@ square_t square_of(fil_t f, rnk_t r) {
 }
 
 // Finds file of square
-fil_t fil_of(square_t sq) {
+inline fil_t fil_of(square_t sq) {
   fil_t f = ((sq >> FIL_SHIFT) & FIL_MASK) - FIL_ORIGIN;
   DEBUG_LOG(1, "File of square %d is %d\n", sq, f);
   return f;
 }
 
 // Finds rank of square
-rnk_t rnk_of(square_t sq) {
+inline rnk_t rnk_of(square_t sq) {
   rnk_t r = ((sq >> RNK_SHIFT) & RNK_MASK) - RNK_ORIGIN;
   DEBUG_LOG(1, "Rank of square %d is %d\n", sq, r);
   return r;
@@ -164,7 +164,7 @@ int dir_of(int i) {
 // directions for laser: NN, EE, SS, WW
 static int beam[NUM_ORI] = {1, ARR_WIDTH, -1, -ARR_WIDTH};
 
-int beam_of(int direction) {
+inline int beam_of(int direction) {
   tbassert(direction >= 0 && direction < NUM_ORI, "dir: %d\n", direction);
   return beam[direction];
 }
@@ -179,7 +179,7 @@ int reflect[NUM_ORI][NUM_ORI] = {
   { -1, NN, SS, -1 }   // WW
 };
 
-int reflect_of(int beam_dir, int pawn_ori) {
+inline int reflect_of(int beam_dir, int pawn_ori) {
   tbassert(beam_dir >= 0 && beam_dir < NUM_ORI, "beam-dir: %d\n", beam_dir);
   tbassert(pawn_ori >= 0 && pawn_ori < NUM_ORI, "pawn-ori: %d\n", pawn_ori);
   return reflect[beam_dir][pawn_ori];
@@ -189,23 +189,23 @@ int reflect_of(int beam_dir, int pawn_ori) {
 // Move getters and setters.
 // -----------------------------------------------------------------------------
 
-ptype_t ptype_mv_of(move_t mv) {
+inline ptype_t ptype_mv_of(move_t mv) {
   return (ptype_t) ((mv >> PTYPE_MV_SHIFT) & PTYPE_MV_MASK);
 }
 
-square_t from_square(move_t mv) {
+inline square_t from_square(move_t mv) {
   return (mv >> FROM_SHIFT) & FROM_MASK;
 }
 
-square_t to_square(move_t mv) {
+inline square_t to_square(move_t mv) {
   return (mv >> TO_SHIFT) & TO_MASK;
 }
 
-rot_t rot_of(move_t mv) {
+inline rot_t rot_of(move_t mv) {
   return (rot_t) ((mv >> ROT_SHIFT) & ROT_MASK);
 }
 
-move_t move_of(ptype_t typ, rot_t rot, square_t from_sq, square_t to_sq) {
+inline move_t move_of(ptype_t typ, rot_t rot, square_t from_sq, square_t to_sq) {
   return ((typ & PTYPE_MV_MASK) << PTYPE_MV_SHIFT) |
       ((rot & ROT_MASK) << ROT_SHIFT) |
       ((from_sq & FROM_MASK) << FROM_SHIFT) |
@@ -641,7 +641,7 @@ static uint64_t perft_search(position_t *p, int depth, int ply) {
 }
 
 // help to verify the move generator
-void do_perft(position_t *gme, int depth, int ply) {
+inline void do_perft(position_t *gme, int depth, int ply) {
   fen_to_pos(gme, "");
 
   for (int d = 1; d <= depth; d++) {
