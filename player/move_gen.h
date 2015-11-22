@@ -3,6 +3,8 @@
 #ifndef MOVE_GEN_H
 #define MOVE_GEN_H
 
+#include "./tbassert.h"
+#include "./util.h"
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -151,27 +153,181 @@ typedef struct position {
 // -----------------------------------------------------------------------------
 
 char *color_to_str(color_t c);
-color_t color_to_move_of(position_t *p);
-color_t color_of(piece_t x);
-color_t opp_color(color_t c);
-void set_color(piece_t *x, color_t c);
-ptype_t ptype_of(piece_t x);
-void set_ptype(piece_t *x, ptype_t pt);
-int ori_of(piece_t x);
-void set_ori(piece_t *x, int ori);
+inline color_t color_to_move_of(position_t *p) {
+  if ((p->ply & 1) == 0) {
+    return WHITE;
+  } else {
+    return BLACK;
+  }
+}
+
+inline color_t color_of(piece_t x) {
+  return (color_t) ((x >> COLOR_SHIFT) & COLOR_MASK);
+}
+
+inline color_t opp_color(color_t c) {
+  if (c == WHITE) {
+    return BLACK;
+  } else {
+    return WHITE;
+  }
+}
+
+
+inline void set_color(piece_t *x, color_t c) {
+  tbassert((c >= 0) & (c <= COLOR_MASK), "color: %d\n", c);
+  *x = ((c & COLOR_MASK) << COLOR_SHIFT) |
+      (*x & ~(COLOR_MASK << COLOR_SHIFT));
+}
+
+
+inline ptype_t ptype_of(piece_t x) {
+  return (ptype_t) ((x >> PTYPE_SHIFT) & PTYPE_MASK);
+}
+
+inline void set_ptype(piece_t *x, ptype_t pt) {
+  *x = ((pt & PTYPE_MASK) << PTYPE_SHIFT) |
+      (*x & ~(PTYPE_MASK << PTYPE_SHIFT));
+}
+
+inline int ori_of(piece_t x) {
+  return (x >> ORI_SHIFT) & ORI_MASK;
+}
+
+inline void set_ori(piece_t *x, int ori) {
+  *x = ((ori & ORI_MASK) << ORI_SHIFT) |
+      (*x & ~(ORI_MASK << ORI_SHIFT));
+}
 void init_zob();
-square_t square_of(fil_t f, rnk_t r);
-fil_t fil_of(square_t sq);
-rnk_t rnk_of(square_t sq);
+// For no square, use 0, which is guaranteed to be off board
+inline static square_t square_of(fil_t f, rnk_t r) {
+  square_t s = ARR_WIDTH * (FIL_ORIGIN + f) + RNK_ORIGIN + r;
+  DEBUG_LOG(1, "Square of (file %d, rank %d) is %d\n", f, r, s);
+  tbassert((s >= 0) && (s < ARR_SIZE), "s: %d\n", s);
+  return s;
+}
+
+// Finds file of square
+inline fil_t fil_of_old(square_t sq) {
+  fil_t f = ((sq >> FIL_SHIFT) & FIL_MASK) - FIL_ORIGIN;
+  DEBUG_LOG(1, "File of square %d is %d\n", sq, f);
+  return f;
+}
+
+static fil_t fil_of_table[256] = {
+-3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3,
+-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2,
+-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
+10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11,
+12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+};
+
+inline static fil_t fil_of(square_t sq) {
+  fil_t f = fil_of_table[sq];
+  DEBUG_LOG(1, "File of square %d is %d\n", sq, f);
+  return f;
+}
+// Finds rank of square
+inline rnk_t rnk_of_old(square_t sq) {
+  rnk_t r = ((sq >> RNK_SHIFT) & RNK_MASK) - RNK_ORIGIN;
+  DEBUG_LOG(1, "Rank of square %d is %d\n", sq, r);
+  return r;
+}
+
+static rnk_t rnk_of_table[256] = {
+-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+};
+
+inline static rnk_t rnk_of(square_t sq) {
+  rnk_t r = rnk_of_table[sq];
+  DEBUG_LOG(1, "Rank of square %d is %d\n", sq, r);
+  return r;
+}
 int square_to_str(square_t sq, char *buf, size_t bufsize);
-int dir_of(int i);
-int beam_of(int direction);
-int reflect_of(int beam_dir, int pawn_ori);
-ptype_t ptype_mv_of(move_t mv);
-square_t from_square(move_t mv);
-square_t to_square(move_t mv);
-rot_t rot_of(move_t mv);
-move_t move_of(ptype_t typ, rot_t rot, square_t from_sq, square_t to_sq);
+// direction map
+static int dir[8] = { -ARR_WIDTH - 1, -ARR_WIDTH, -ARR_WIDTH + 1, -1, 1,
+                      ARR_WIDTH - 1, ARR_WIDTH, ARR_WIDTH + 1 };
+inline static int dir_of(int i) {
+  tbassert(i >= 0 && i < 8, "i: %d\n", i);
+  return dir[i];
+}
+
+
+// directions for laser: NN, EE, SS, WW
+static int beam[NUM_ORI] = {1, ARR_WIDTH, -1, -ARR_WIDTH};
+
+inline static int beam_of(int direction) {
+  tbassert(direction >= 0 && direction < NUM_ORI, "dir: %d\n", direction);
+  return beam[direction];
+}
+
+// reflect[beam_dir][pawn_orientation]
+// -1 indicates back of Pawn
+static int reflect[NUM_ORI][NUM_ORI] = {
+  //  NW  NE  SE  SW
+  { -1, -1, EE, WW},   // NN
+  { NN, -1, -1, SS},   // EE
+  { WW, EE, -1, -1 },  // SS
+  { -1, NN, SS, -1 }   // WW
+};
+
+inline static int reflect_of(int beam_dir, int pawn_ori) {
+  tbassert(beam_dir >= 0 && beam_dir < NUM_ORI, "beam-dir: %d\n", beam_dir);
+  tbassert(pawn_ori >= 0 && pawn_ori < NUM_ORI, "pawn-ori: %d\n", pawn_ori);
+  return reflect[beam_dir][pawn_ori];
+}
+// -----------------------------------------------------------------------------
+// Move getters and setters.
+// -----------------------------------------------------------------------------
+
+inline ptype_t ptype_mv_of(move_t mv) {
+  return (ptype_t) ((mv >> PTYPE_MV_SHIFT) & PTYPE_MV_MASK);
+}
+
+inline square_t from_square(move_t mv) {
+  return (mv >> FROM_SHIFT) & FROM_MASK;
+}
+
+inline square_t to_square(move_t mv) {
+  return (mv >> TO_SHIFT) & TO_MASK;
+}
+
+inline rot_t rot_of(move_t mv) {
+  return (rot_t) ((mv >> ROT_SHIFT) & ROT_MASK);
+}
+
+inline move_t move_of(ptype_t typ, rot_t rot, square_t from_sq, square_t to_sq) {
+  return ((typ & PTYPE_MV_MASK) << PTYPE_MV_SHIFT) |
+      ((rot & ROT_MASK) << ROT_SHIFT) |
+      ((from_sq & FROM_MASK) << FROM_SHIFT) |
+      ((to_sq & TO_MASK) << TO_SHIFT);
+}
 void move_to_str(move_t mv, char *buf, size_t bufsize);
 int generate_all(position_t *p, sortable_move_t *sortable_move_list,
                  bool strict);

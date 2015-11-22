@@ -18,7 +18,7 @@ ifeq ($(UNAME),Darwin)
 else
 	OS_TYPE := Linux
 	#PFLAG := -D_XOPEN_SOURCE
-	CFLAGS := -std=gnu99 -lrt -Wall -g
+	CFLAGS := -std=gnu99 -lrt -Wall -g -pg
 	LDFLAGS= -Wall -lm -lrt -ldl -lpthread -ffast-math
 endif
 endif
@@ -36,7 +36,7 @@ endif
 
 CFLAGS += $(OTHER_CFLAGS)
 
-LDFLAGS= -Wall -lrt -lm -lcilkrts -ldl -lpthread -ffast-math
+LDFLAGS= -Wall -lrt -lm -lcilkrts -ldl -lpthread -ffast-math -pg
 
 .PHONY : default clean
 
