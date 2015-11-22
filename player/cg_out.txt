@@ -1,0 +1,43 @@
+--------------------------------------------------------------------------------
+I1 cache:         32768 B, 64 B, 8-way associative
+D1 cache:         32768 B, 64 B, 8-way associative
+LL cache:         31457280 B, 64 B, 30-way associative
+Command:          ./leiserchess input.txt
+Data file:        cachegrind.out.4009
+Events recorded:  Ir I1mr ILmr Dr D1mr DLmr Dw D1mw DLmw Bc Bcm Bi Bim
+Events shown:     Ir I1mr ILmr Dr D1mr DLmr Dw D1mw DLmw Bc Bcm Bi Bim
+Event sort order: Ir I1mr ILmr Dr D1mr DLmr Dw D1mw DLmw Bc Bcm Bi Bim
+Thresholds:       0.1 100 100 100 100 100 100 100 100 100 100 100 100
+Include dirs:     
+User annotated:   
+Auto-annotation:  off
+
+--------------------------------------------------------------------------------
+            Ir  I1mr  ILmr            Dr      D1mr  DLmr            Dw      D1mw    DLmw            Bc         Bcm      Bi Bim 
+--------------------------------------------------------------------------------
+15,589,653,832 2,220 1,628 3,607,543,830 7,913,178 7,164 2,490,998,353 1,858,951 266,198 3,801,486,109 140,619,132 733,669 521  PROGRAM TOTALS
+
+--------------------------------------------------------------------------------
+           Ir I1mr ILmr            Dr      D1mr  DLmr            Dw    D1mw    DLmw            Bc        Bcm      Bi Bim  file:function
+--------------------------------------------------------------------------------
+4,813,256,940   65   30   927,105,769   300,867    17   294,504,184 182,613      46   922,086,805 65,860,607       0   0  /afs/athena.mit.edu/user/h/o/hongyis/project4/player/eval.c:eval
+3,942,105,644    7    7   475,867,553   249,519    30   451,961,790 126,040      30   870,439,591 23,861,589       0   0  /afs/athena.mit.edu/user/h/o/hongyis/project4/player/./search_common.c:scout_search.part.8
+2,623,329,871   28   13 1,530,705,973 5,117,971     0 1,430,165,458 453,349     323 1,518,526,634 26,816,422       0   0  /afs/athena.mit.edu/user/h/o/hongyis/project4/player/move_gen.c:make_move
+1,077,082,006   74   22   154,818,299       275     1    72,929,015 405,776     174   177,937,278 16,340,920       0   0  /afs/athena.mit.edu/user/h/o/hongyis/project4/player/move_gen.c:generate_all
+  607,233,616   12    5    68,655,396     9,985     5             0       0       0             0          0       0   0  /afs/athena.mit.edu/user/h/o/hongyis/project4/player/./././move_gen.h:eval
+  545,952,929    4    4    69,848,091   665,499     0    25,213,159       0       0    89,242,353    892,317       0   0  /afs/athena.mit.edu/user/h/o/hongyis/project4/player/./search_common.c:get_sortable_move_list
+  423,939,234   35   14   102,077,428    78,103     0   110,166,549  14,309      18    30,154,784    661,984       0   0  /afs/athena.mit.edu/user/h/o/hongyis/project4/player/./search_common.c:evaluateMove
+  374,073,136    6    2    41,375,575       120     2             0       0       0     8,786,477     18,710       0   0  /afs/athena.mit.edu/user/h/o/hongyis/project4/player/./move_gen.h:make_move
+  297,687,261   14    7   105,654,044   273,073     4    47,913,214  25,911      24    60,680,353  2,130,366       0   0  /afs/athena.mit.edu/user/h/o/hongyis/project4/player/./search_scout.c:scout_search.part.8
+  263,859,353    9    7    34,056,430         1     0    18,480,537 149,299      53    11,666,464    364,776       0   0  /afs/athena.mit.edu/user/h/o/hongyis/project4/player/./move_gen.h:generate_all
+  134,482,967   16    5    11,040,363     7,432     0       995,025      17       0    46,587,190    963,537       0   0  /afs/athena.mit.edu/user/h/o/hongyis/project4/player/././move_gen.h:evaluateMove
+   88,540,712    1    1       729,152         0     0       364,576       0       0             0          0       0   0  /afs/athena.mit.edu/user/h/o/hongyis/project4/player/././move_gen.h:get_sortable_move_list
+   76,497,254    3    3    16,182,911         3     1     1,458,308  31,580      17    16,226,331  1,028,058       0   0  /afs/athena.mit.edu/user/h/o/hongyis/project4/player/eval.c:mark_laser_path
+   59,377,659   17    9    18,383,101     4,253     0    10,959,533       0       0    14,396,115    974,784       0   0  /afs/athena.mit.edu/user/h/o/hongyis/project4/player/./search_scout.c:evaluateMove
+   49,583,294   60   43     6,197,953     1,202     4     8,749,970  26,161      24     5,104,197         73       2   2  /build/buildd/eglibc-2.19/malloc/malloc.c:_int_malloc
+   41,842,392    6    6     9,157,581        13     0     5,166,039   5,797       7     5,192,614    336,447       0   0  /afs/athena.mit.edu/user/h/o/hongyis/project4/player/./search_common.c:evaluate_as_leaf
+   37,186,752   25   15    10,572,704    21,131     0     3,645,760       0       0     9,478,976         43       0   0  /build/buildd/eglibc-2.19/malloc/malloc.c:_int_free
+   29,751,041    1    1       724,895         1     0             0       0       0             0          0       0   0  /afs/athena.mit.edu/user/h/o/hongyis/project4/player/./././move_gen.h:mark_laser_path
+   18,030,788    2    2     2,389,642    37,107     0       892,561       0       0     1,043,691     43,976       0   0  /afs/athena.mit.edu/user/h/o/hongyis/project4/player/./search_globals.c:scout_search.part.8
+   17,698,971    7    7     2,329,516    10,439    20     1,395,840     689      12     3,588,479     36,421       0   0  /afs/athena.mit.edu/user/h/o/hongyis/project4/player/./search_common.c:searchPV
+
