@@ -341,8 +341,14 @@ victims_t KO();
 victims_t ILLEGAL();
 
 bool is_ILLEGAL(victims_t victims);
-bool is_KO(victims_t victims);
-bool zero_victims(victims_t victims);
+inline bool is_KO(victims_t victims) {
+  return (victims.stomped == KO_STOMPED) ||
+      (victims.zapped == KO_ZAPPED);
+}
+inline bool zero_victims(victims_t victims) {
+  return (victims.stomped == 0) &&
+      (victims.zapped == 0);
+}
 bool victim_exists(victims_t victims);
 
 int mark_laser_path(position_t *p, char *laser_map, color_t c,

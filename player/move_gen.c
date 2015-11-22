@@ -599,20 +599,12 @@ victims_t ILLEGAL() {
   return ((victims_t) {ILLEGAL_STOMPED, ILLEGAL_ZAPPED});
 }
 
-bool is_KO(victims_t victims) {
-  return (victims.stomped == KO_STOMPED) ||
-      (victims.zapped == KO_ZAPPED);
-}
 
 bool is_ILLEGAL(victims_t victims) {
   return (victims.stomped == ILLEGAL_STOMPED) ||
       (victims.zapped == ILLEGAL_ZAPPED);
 }
 
-bool zero_victims(victims_t victims) {
-  return (victims.stomped == 0) &&
-      (victims.zapped == 0);
-}
 
 bool victim_exists(victims_t victims) {
   return (victims.stomped > 0) ||
