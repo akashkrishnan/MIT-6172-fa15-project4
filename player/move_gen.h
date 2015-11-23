@@ -166,11 +166,12 @@ inline color_t color_of(piece_t x) {
 }
 
 inline color_t opp_color(color_t c) {
-  if (c == WHITE) {
-    return BLACK;
-  } else {
-    return WHITE;
-  }
+  return (color_t) (c ^ 1);
+  //if (c == WHITE) {
+  //  return BLACK;
+  //} else {
+  //  return WHITE;
+  //}
 }
 
 
