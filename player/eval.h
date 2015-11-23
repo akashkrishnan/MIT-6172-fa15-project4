@@ -14,4 +14,5 @@
 
 score_t eval(position_t *p, bool verbose);
 void laser_map_init();
+void init_eval_tables();
 #endif  // EVAL_H

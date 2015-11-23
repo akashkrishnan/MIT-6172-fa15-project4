@@ -40,13 +40,29 @@ void laser_map_init() {
 
 
 // PCENTRAL heuristic: Bonus for Pawn near center of board
-ev_score_t pcentral(fil_t f, rnk_t r) {
+
+double pcentral_lookup_table[10][10];
+
+double pcentral_old(fil_t f, rnk_t r) {
   double df = BOARD_WIDTH/2 - f - 1;
   if (df < 0)  df = f - BOARD_WIDTH/2;
   double dr = BOARD_WIDTH/2 - r - 1;
   if (dr < 0) dr = r - BOARD_WIDTH/2;
   double bonus = 1 - sqrt(df * df + dr * dr) / (BOARD_WIDTH / sqrt(2));
-  return PCENTRAL * bonus;
+  return bonus;
+}
+
+void init_eval_tables() {
+  for (fil_t f = 0; f < BOARD_WIDTH; f++) {
+    for (rnk_t r = 0; r < BOARD_WIDTH; r++) {
+      pcentral_lookup_table[f][r] = pcentral_old(f,r);
+    }
+  }
+}
+ 
+
+ev_score_t pcentral(fil_t f, rnk_t r) {
+  return PCENTRAL * pcentral_lookup_table[f][r];
 }
 
 

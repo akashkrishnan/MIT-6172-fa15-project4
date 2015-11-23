@@ -63,6 +63,8 @@ extern int KAGGRESSIVE;
 extern int MOBILITY;
 extern int PAWNPIN;
 
+extern double pcentral_lookup_table[10][10];
+
 // defined in move_gen.c
 extern int USE_KO;
 
@@ -410,6 +412,7 @@ int main(int argc, char *argv[]) {
 
   init_options();
   init_zob();
+  init_eval_tables();
 
   char **tok = (char **) malloc(sizeof(char *) * MAX_CHARS_IN_TOKEN * MAX_PLY_IN_GAME);
   int   ix = 0;  // index of which position we are operating on
