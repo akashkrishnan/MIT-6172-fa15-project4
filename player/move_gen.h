@@ -24,9 +24,9 @@
 // board is 8 x 8 or 10 x 10
 #define BOARD_WIDTH 10
 
-typedef int square_t;
-typedef int rnk_t;
-typedef int fil_t;
+typedef int16_t square_t;
+typedef int8_t rnk_t;
+typedef int8_t fil_t;
 
 #define FIL_ORIGIN ((ARR_WIDTH - BOARD_WIDTH) / 2)
 #define RNK_ORIGIN ((ARR_WIDTH - BOARD_WIDTH) / 2)
@@ -42,7 +42,7 @@ typedef int fil_t;
 
 #define PIECE_SIZE 5  // Number of bits in (ptype, color, orientation)
 
-typedef int piece_t;
+typedef int8_t piece_t;
 
 // -----------------------------------------------------------------------------
 // piece types
@@ -332,7 +332,7 @@ void move_to_str(move_t mv, char *buf, size_t bufsize);
 int generate_all(position_t *p, sortable_move_t *sortable_move_list,
                  bool strict);
 void do_perft(position_t *gme, int depth, int ply);
-piece_t low_level_make_move(position_t *old, position_t *p, move_t mv);
+square_t low_level_make_move(position_t *old, position_t *p, move_t mv);
 victims_t make_move(position_t *old, position_t *p, move_t mv);
 void display(position_t *p);
 uint64_t compute_zob_key(position_t *p);

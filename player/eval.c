@@ -28,6 +28,13 @@ int PAWNPIN;
 char laser_map_black[ARR_SIZE];
 char laser_map_white[ARR_SIZE];
 
+void laser_map_init() {
+  for (int i = 0; i < ARR_SIZE; ++i) {
+    laser_map_black[i] = 4;   // Invalid square
+    laser_map_white[i] = 4;   // Invalid square
+  }
+}
+
 // Heuristics for static evaluation - described in the google doc
 // mentioned in the handout.
 
@@ -369,21 +376,11 @@ score_t eval(position_t *p, bool verbose) {
         default:
           tbassert(false, "Jose says: no way!\n");   // No way, Jose!
       }
+      laser_map_black[sq] = 0;
+      laser_map_white[sq] = 0;
     }
   }
    
-  for (int i = 0; i < ARR_SIZE; ++i) {
-    laser_map_black[i] = 4;   // Invalid square
-    laser_map_white[i] = 4;   // Invalid square
-  }
-
-  for (fil_t f = 0; f < BOARD_WIDTH; ++f) {
-    for (rnk_t r = 0; r < BOARD_WIDTH; ++r) {
-      laser_map_black[square_of(f, r)] = 0;
-      laser_map_white[square_of(f, r)] = 0;
-    }
-  }
-
   int black_pawns_unpinned = mark_laser_path(p, laser_map_white, WHITE, 1);  // 1 = path of laser with no moves
   
   ev_score_t w_hattackable = HATTACK * h_squares_attackable(p, WHITE);
