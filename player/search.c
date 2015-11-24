@@ -143,11 +143,11 @@ static score_t searchPV(searchNode *node, int depth, uint64_t *node_count_serial
   int num_moves_tried = 0;
 
   moveEvaluationResult* result = (moveEvaluationResult *) malloc(sizeof(moveEvaluationResult));
-
-    // Incrementally sort the move list.
-    sort_incremental(move_list, num_of_moves, 0);
+  
   // Start searching moves.
   for (int mv_index = 0; mv_index < num_of_moves; mv_index++) {
+    // Incrementally sort the move list.
+    sort_incremental(move_list, num_of_moves, mv_index);
 
     move_t mv = get_move(move_list[mv_index]);
 
