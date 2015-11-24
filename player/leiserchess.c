@@ -516,9 +516,9 @@ int main(int argc, char *argv[]) {
 
       if (strcmp(tok[0], "uci") == 0) {
         // TODO(you): Change the name & version once you start modifying the code!
-        printf("id name %s version %s\n", "Leiserchess", VERSION);
+        printf("id name %s version %s\n", "akashk16-alvis-hongyis-huypham", VERSION);
         printf("id author %s\n",
-               "Don Dailey, Charles E. Leiserson, and the staff of MIT 6.172");
+               "Akash, Alvis, Hongyi, Huy");
         print_options();
         printf("uciok\n");
         continue;
