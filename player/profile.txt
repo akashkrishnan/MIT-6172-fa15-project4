@@ -1,0 +1,572 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ms/call  ms/call  name    
+ 18.63      1.38     1.38    13932     0.10     0.49  evaluateMove
+ 12.42      2.30     0.92  1737312     0.00     0.00  pawnpin
+ 10.53      3.08     0.78  1737312     0.00     0.00  h_squares_attackable
+ 10.46      3.86     0.78  9565416     0.00     0.00  make_move
+  9.31      4.55     0.69 1192476383     0.00     0.00  square_of
+  8.10      5.15     0.60   868656     0.00     0.00  eval
+  7.96      5.74     0.59  1737312     0.00     0.00  mobility
+  6.75      6.24     0.50                             init_zob
+  2.43      6.42     0.18   375730     0.00     0.00  get_sortable_move_list
+  1.89      6.56     0.14   375731     0.00     0.00  generate_all
+  1.75      6.69     0.13 246016349     0.00     0.00  color_of
+  1.62      6.81     0.12 234674315     0.00     0.00  ptype_of
+  1.48      6.92     0.11  2400933     0.00     0.00  color_to_move_of
+  1.35      7.02     0.10  1003108     0.00     0.00  tt_hashtable_get
+  0.67      7.07     0.05 62134898     0.00     0.00  fil_of
+  0.67      7.12     0.05 61501224     0.00     0.00  rnk_of
+  0.67      7.17     0.05       16     3.13     3.13  set_color
+  0.54      7.21     0.04   375731     0.00     0.00  mark_laser_path
+  0.40      7.24     0.03 14403428     0.00     0.00  zero_victims
+  0.40      7.27     0.03 13898496     0.00     0.00  dir_of
+  0.40      7.30     0.03      356     0.08     0.08  set_ptype
+  0.27      7.32     0.02 59978493     0.00     0.00  beam_of
+  0.27      7.34     0.02 23185210     0.00     0.00  ptype_mv_of
+  0.27      7.36     0.02   163769     0.00     0.00  tt_is_usable
+  0.13      7.37     0.01 35742863     0.00     0.00  ori_of
+  0.13      7.38     0.01 23185210     0.00     0.00  rot_of
+  0.13      7.39     0.01  8686560     0.00     0.00  opp_color
+  0.13      7.40     0.01  1737312     0.00     0.00  kaggressive
+  0.13      7.41     0.01   375730     0.00     0.00  tt_hashtable_put
+  0.07      7.41     0.01                             fire
+  0.00      7.41     0.00 23185210     0.00     0.00  from_square
+  0.00      7.41     0.00 23185210     0.00     0.00  to_square
+  0.00      7.41     0.00  9565416     0.00     0.00  is_KO
+  0.00      7.41     0.00  5232674     0.00     0.00  reflect_of
+  0.00      7.41     0.00  1002660     0.00     0.00  evaluate_as_leaf
+  0.00      7.41     0.00  1002343     0.00     0.00  victim_exists
+  0.00      7.41     0.00   375730     0.00     0.00  tt_adjust_score_for_hashtable
+  0.00      7.41     0.00   375730     0.00     0.00  update_transposition_table
+  0.00      7.41     0.00   134452     0.00     0.00  tt_adjust_score_from_hashtable
+  0.00      7.41     0.00    29582     0.00     0.00  tt_move_of
+  0.00      7.41     0.00     8263     0.00     0.00  myrand
+  0.00      7.41     0.00      448     0.00     0.01  searchPV
+  0.00      7.41     0.00      262     0.00     0.00  milliseconds
+  0.00      7.41     0.00       39     0.00     0.00  move_to_str
+  0.00      7.41     0.00       16     0.00     0.00  set_ori
+  0.00      7.41     0.00        7     0.00     0.00  elapsed_time
+  0.00      7.41     0.00        7     0.00     0.00  reset_abort
+  0.00      7.41     0.00        7     0.00   975.25  searchRoot
+  0.00      7.41     0.00        7     0.00     0.00  should_abort
+  0.00      7.41     0.00        1     0.00     0.00  compute_zob_key
+  0.00      7.41     0.00        1     0.00     0.00  get_sq_from_str
+  0.00      7.41     0.00        1     0.00     0.00  init_abort_timer
+  0.00      7.41     0.00        1     0.00     0.00  init_best_move_history
+  0.00      7.41     0.00        1     0.00     0.00  init_tics
+  0.00      7.41     0.00        1     0.00     0.00  tt_age_hashtable
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+ 
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this 
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 2 byte(s) for 0.13% of 7.41 seconds
+
+index % time    self  children    called     name
+                0.00    6.83       7/7           UciBeginSearch [2]
+[1]     92.1    0.00    6.83       7         searchRoot [1]
+                1.16    4.58     408/485         evaluateMove <cycle 1> [4]
+                0.22    0.86      77/485         searchPV <cycle 1> [36]
+                0.00    0.00     490/9565416     make_move [9]
+                0.00    0.00     415/2400933     color_to_move_of [17]
+                0.00    0.00     966/14403428     zero_victims [24]
+                0.00    0.00       1/375731      generate_all [14]
+                0.00    0.00     483/234674315     ptype_of [16]
+                0.00    0.00     490/9565416     is_KO [39]
+                0.00    0.00      70/8263        myrand [46]
+                0.00    0.00      38/39          move_to_str [48]
+                0.00    0.00      10/262         milliseconds [47]
+-----------------------------------------------
+                                                 <spontaneous>
+[2]     92.1    0.00    6.83                 UciBeginSearch [2]
+                0.00    6.83       7/7           searchRoot [1]
+                0.00    0.00       7/7           reset_abort [51]
+                0.00    0.00       7/7           elapsed_time [50]
+                0.00    0.00       7/7           should_abort [52]
+                0.00    0.00       1/1           init_abort_timer [55]
+                0.00    0.00       1/1           init_tics [57]
+                0.00    0.00       1/1           tt_age_hashtable [58]
+                0.00    0.00       1/1           init_best_move_history [56]
+                0.00    0.00       1/39          move_to_str [48]
+-----------------------------------------------
+[3]     92.1    1.38    5.45     485+13895   <cycle 1 as a whole> [3]
+                1.38    5.44   13932+10553654     evaluateMove <cycle 1> [4]
+                0.00    0.00     448             searchPV <cycle 1> [36]
+-----------------------------------------------
+                             10553654             evaluateMove <cycle 1> [4]
+                               13524             searchPV <cycle 1> [36]
+                1.16    4.58     408/485         searchRoot [1]
+[4]     92.1    1.38    5.44   13932+10553654 evaluateMove <cycle 1> [4]
+                0.00    4.15 1002660/1002660     evaluate_as_leaf [5]
+                0.78    0.00 9564926/9565416     make_move [9]
+                0.18    0.24  375411/375730      get_sortable_move_list [13]
+                0.05    0.00 1155571/2400933     color_to_move_of [17]
+                0.03    0.00 14402462/14403428     zero_victims [24]
+                0.01    0.00  375411/375730      tt_hashtable_put [34]
+                0.00    0.00 9408997/234674315     ptype_of [16]
+                0.00    0.00  893823/23185210     ptype_mv_of [28]
+                0.00    0.00  893823/23185210     rot_of [32]
+                0.00    0.00  616836/246016349     color_of [15]
+                0.00    0.00  893823/35742863     ori_of [31]
+                0.00    0.00 9564926/9565416     is_KO [39]
+                0.00    0.00 1002343/1002343     victim_exists [41]
+                0.00    0.00  893823/23185210     from_square [37]
+                0.00    0.00  893823/23185210     to_square [38]
+                0.00    0.00  375411/375730      update_transposition_table [43]
+                0.00    0.00     244/262         milliseconds [47]
+                                 371             searchPV <cycle 1> [36]
+                             10553654             evaluateMove <cycle 1> [4]
+-----------------------------------------------
+                0.00    4.15 1002660/1002660     evaluateMove <cycle 1> [4]
+[5]     56.0    0.00    4.15 1002660         evaluate_as_leaf [5]
+                0.60    3.43  868208/868656      eval [6]
+                0.10    0.00 1002660/1003108     tt_hashtable_get [18]
+                0.02    0.00  163769/163769      tt_is_usable [29]
+                0.00    0.00  134452/134452      tt_adjust_score_from_hashtable [44]
+                0.00    0.00   29317/29582       tt_move_of [45]
+-----------------------------------------------
+                0.00    0.00     448/868656      searchPV <cycle 1> [36]
+                0.60    3.43  868208/868656      evaluate_as_leaf [5]
+[6]     54.4    0.60    3.44  868656         eval [6]
+                0.92    0.48 1737312/1737312     pawnpin [7]
+                0.78    0.28 1737312/1737312     h_squares_attackable [8]
+                0.59    0.15 1737312/1737312     mobility [10]
+                0.05    0.00 88602912/1192476383     square_of [11]
+                0.05    0.00 88602912/246016349     color_of [15]
+                0.04    0.00 86865600/234674315     ptype_of [16]
+                0.04    0.00  868656/2400933     color_to_move_of [17]
+                0.02    0.00 23053756/62134898     fil_of [20]
+                0.02    0.00 22420082/61501224     rnk_of [22]
+                0.01    0.01 1737312/1737312     kaggressive [30]
+                0.00    0.00 1737312/8686560     opp_color [33]
+                0.00    0.00 1737312/35742863     ori_of [31]
+-----------------------------------------------
+                0.92    0.48 1737312/1737312     eval [6]
+[7]     18.9    0.92    0.48 1737312         pawnpin [7]
+                0.34    0.00 580942327/1192476383     square_of [11]
+                0.08    0.00 155059285/246016349     color_of [15]
+                0.05    0.00 97009595/234674315     ptype_of [16]
+                0.01    0.00 18588953/59978493     beam_of [27]
+                0.00    0.00 1737312/8686560     opp_color [33]
+                0.00    0.00 3356399/35742863     ori_of [31]
+                0.00    0.00 1619087/5232674     reflect_of [40]
+-----------------------------------------------
+                0.78    0.28 1737312/1737312     eval [6]
+[8]     14.3    0.78    0.28 1737312         h_squares_attackable [8]
+                0.20    0.00 347462400/1192476383     square_of [11]
+                0.03    0.00 37343830/61501224     rnk_of [22]
+                0.03    0.00 37343830/62134898     fil_of [20]
+                0.01    0.00 18588953/234674315     ptype_of [16]
+                0.01    0.00 18588953/59978493     beam_of [27]
+                0.00    0.00 1737312/8686560     opp_color [33]
+                0.00    0.00 3356399/35742863     ori_of [31]
+                0.00    0.00 1619087/5232674     reflect_of [40]
+-----------------------------------------------
+                0.00    0.00     490/9565416     searchRoot [1]
+                0.78    0.00 9564926/9565416     evaluateMove <cycle 1> [4]
+[9]     10.5    0.78    0.00 9565416         make_move [9]
+-----------------------------------------------
+                0.59    0.15 1737312/1737312     eval [6]
+[10]    10.0    0.59    0.15 1737312         mobility [10]
+                0.10    0.00 173731200/1192476383     square_of [11]
+                0.03    0.00 13898496/13898496     dir_of [25]
+                0.01    0.00 18588953/234674315     ptype_of [16]
+                0.01    0.00 18588953/59978493     beam_of [27]
+                0.00    0.00 1737312/8686560     opp_color [33]
+                0.00    0.00 3356399/35742863     ori_of [31]
+                0.00    0.00 1619087/5232674     reflect_of [40]
+-----------------------------------------------
+                0.00    0.00     232/1192476383     fen_to_pos [19]
+                0.00    0.00 1737312/1192476383     kaggressive [30]
+                0.05    0.00 88602912/1192476383     eval [6]
+                0.10    0.00 173731200/1192476383     mobility [10]
+                0.20    0.00 347462400/1192476383     h_squares_attackable [8]
+                0.34    0.00 580942327/1192476383     pawnpin [7]
+[11]     9.3    0.69    0.00 1192476383         square_of [11]
+-----------------------------------------------
+                                                 <spontaneous>
+[12]     6.7    0.50    0.00                 init_zob [12]
+                0.00    0.00    8193/8263        myrand [46]
+-----------------------------------------------
+                0.00    0.00     319/375730      searchPV <cycle 1> [36]
+                0.18    0.24  375411/375730      evaluateMove <cycle 1> [4]
+[13]     5.6    0.18    0.24  375730         get_sortable_move_list [13]
+                0.14    0.04  375730/375731      generate_all [14]
+                0.02    0.00 22284691/23185210     ptype_mv_of [28]
+                0.02    0.00  375730/2400933     color_to_move_of [17]
+                0.01    0.00 22284691/23185210     rot_of [32]
+                0.01    0.00 22284691/35742863     ori_of [31]
+                0.00    0.00 22284691/23185210     from_square [37]
+                0.00    0.00 22284691/23185210     to_square [38]
+-----------------------------------------------
+                0.00    0.00       1/375731      searchRoot [1]
+                0.14    0.04  375730/375731      get_sortable_move_list [13]
+[14]     2.5    0.14    0.04  375731         generate_all [14]
+                0.04    0.00  375731/375731      mark_laser_path [23]
+-----------------------------------------------
+                0.00    0.00       4/246016349     fen_to_pos [19]
+                0.00    0.00  616836/246016349     evaluateMove <cycle 1> [4]
+                0.00    0.00 1737312/246016349     kaggressive [30]
+                0.05    0.00 88602912/246016349     eval [6]
+                0.08    0.00 155059285/246016349     pawnpin [7]
+[15]     1.8    0.13    0.00 246016349         color_of [15]
+-----------------------------------------------
+                0.00    0.00     100/234674315     fen_to_pos [19]
+                0.00    0.00     483/234674315     searchRoot [1]
+                0.00    0.00 4211634/234674315     mark_laser_path [23]
+                0.00    0.00 9408997/234674315     evaluateMove <cycle 1> [4]
+                0.01    0.00 18588953/234674315     mobility [10]
+                0.01    0.00 18588953/234674315     h_squares_attackable [8]
+                0.04    0.00 86865600/234674315     eval [6]
+                0.05    0.00 97009595/234674315     pawnpin [7]
+[16]     1.6    0.12    0.00 234674315         ptype_of [16]
+-----------------------------------------------
+                0.00    0.00     415/2400933     searchRoot [1]
+                0.00    0.00     561/2400933     searchPV <cycle 1> [36]
+                0.02    0.00  375730/2400933     get_sortable_move_list [13]
+                0.04    0.00  868656/2400933     eval [6]
+                0.05    0.00 1155571/2400933     evaluateMove <cycle 1> [4]
+[17]     1.5    0.11    0.00 2400933         color_to_move_of [17]
+-----------------------------------------------
+                0.00    0.00     448/1003108     searchPV <cycle 1> [36]
+                0.10    0.00 1002660/1003108     evaluate_as_leaf [5]
+[18]     1.3    0.10    0.00 1003108         tt_hashtable_get [18]
+-----------------------------------------------
+                                                 <spontaneous>
+[19]     1.1    0.00    0.08                 fen_to_pos [19]
+                0.05    0.00      16/16          set_color [21]
+                0.03    0.00     356/356         set_ptype [26]
+                0.00    0.00     232/1192476383     square_of [11]
+                0.00    0.00     100/234674315     ptype_of [16]
+                0.00    0.00       4/246016349     color_of [15]
+                0.00    0.00      16/16          set_ori [49]
+                0.00    0.00       1/1           get_sq_from_str [54]
+                0.00    0.00       1/1           compute_zob_key [53]
+-----------------------------------------------
+                0.00    0.00 1737312/62134898     kaggressive [30]
+                0.02    0.00 23053756/62134898     eval [6]
+                0.03    0.00 37343830/62134898     h_squares_attackable [8]
+[20]     0.7    0.05    0.00 62134898         fil_of [20]
+-----------------------------------------------
+                0.05    0.00      16/16          fen_to_pos [19]
+[21]     0.7    0.05    0.00      16         set_color [21]
+-----------------------------------------------
+                0.00    0.00 1737312/61501224     kaggressive [30]
+                0.02    0.00 22420082/61501224     eval [6]
+                0.03    0.00 37343830/61501224     h_squares_attackable [8]
+[22]     0.7    0.05    0.00 61501224         rnk_of [22]
+-----------------------------------------------
+                0.04    0.00  375731/375731      generate_all [14]
+[23]     0.6    0.04    0.00  375731         mark_laser_path [23]
+                0.00    0.00 4211634/234674315     ptype_of [16]
+                0.00    0.00 4211634/59978493     beam_of [27]
+                0.00    0.00  751144/35742863     ori_of [31]
+                0.00    0.00  375413/5232674     reflect_of [40]
+-----------------------------------------------
+                0.00    0.00     966/14403428     searchRoot [1]
+                0.03    0.00 14402462/14403428     evaluateMove <cycle 1> [4]
+[24]     0.4    0.03    0.00 14403428         zero_victims [24]
+-----------------------------------------------
+                0.03    0.00 13898496/13898496     mobility [10]
+[25]     0.4    0.03    0.00 13898496         dir_of [25]
+-----------------------------------------------
+                0.03    0.00     356/356         fen_to_pos [19]
+[26]     0.4    0.03    0.00     356         set_ptype [26]
+-----------------------------------------------
+                0.00    0.00 4211634/59978493     mark_laser_path [23]
+                0.01    0.00 18588953/59978493     pawnpin [7]
+                0.01    0.00 18588953/59978493     mobility [10]
+                0.01    0.00 18588953/59978493     h_squares_attackable [8]
+[27]     0.3    0.02    0.00 59978493         beam_of [27]
+-----------------------------------------------
+                0.00    0.00    6696/23185210     searchPV <cycle 1> [36]
+                0.00    0.00  893823/23185210     evaluateMove <cycle 1> [4]
+                0.02    0.00 22284691/23185210     get_sortable_move_list [13]
+[28]     0.3    0.02    0.00 23185210         ptype_mv_of [28]
+-----------------------------------------------
+                0.02    0.00  163769/163769      evaluate_as_leaf [5]
+[29]     0.3    0.02    0.00  163769         tt_is_usable [29]
+-----------------------------------------------
+                0.01    0.01 1737312/1737312     eval [6]
+[30]     0.2    0.01    0.01 1737312         kaggressive [30]
+                0.00    0.00 1737312/8686560     opp_color [33]
+                0.00    0.00 1737312/61501224     rnk_of [22]
+                0.00    0.00 1737312/62134898     fil_of [20]
+                0.00    0.00 1737312/1192476383     square_of [11]
+                0.00    0.00 1737312/246016349     color_of [15]
+-----------------------------------------------
+                0.00    0.00    6696/35742863     searchPV <cycle 1> [36]
+                0.00    0.00  751144/35742863     mark_laser_path [23]
+                0.00    0.00  893823/35742863     evaluateMove <cycle 1> [4]
+                0.00    0.00 1737312/35742863     eval [6]
+                0.00    0.00 3356399/35742863     pawnpin [7]
+                0.00    0.00 3356399/35742863     mobility [10]
+                0.00    0.00 3356399/35742863     h_squares_attackable [8]
+                0.01    0.00 22284691/35742863     get_sortable_move_list [13]
+[31]     0.1    0.01    0.00 35742863         ori_of [31]
+-----------------------------------------------
+                0.00    0.00    6696/23185210     searchPV <cycle 1> [36]
+                0.00    0.00  893823/23185210     evaluateMove <cycle 1> [4]
+                0.01    0.00 22284691/23185210     get_sortable_move_list [13]
+[32]     0.1    0.01    0.00 23185210         rot_of [32]
+-----------------------------------------------
+                0.00    0.00 1737312/8686560     kaggressive [30]
+                0.00    0.00 1737312/8686560     pawnpin [7]
+                0.00    0.00 1737312/8686560     mobility [10]
+                0.00    0.00 1737312/8686560     h_squares_attackable [8]
+                0.00    0.00 1737312/8686560     eval [6]
+[33]     0.1    0.01    0.00 8686560         opp_color [33]
+-----------------------------------------------
+                0.00    0.00     319/375730      searchPV <cycle 1> [36]
+                0.01    0.00  375411/375730      evaluateMove <cycle 1> [4]
+[34]     0.1    0.01    0.00  375730         tt_hashtable_put [34]
+-----------------------------------------------
+                                                 <spontaneous>
+[35]     0.1    0.01    0.00                 fire [35]
+-----------------------------------------------
+                                 371             evaluateMove <cycle 1> [4]
+                0.22    0.86      77/485         searchRoot [1]
+[36]     0.0    0.00    0.00     448         searchPV <cycle 1> [36]
+                0.00    0.00     448/868656      eval [6]
+                0.00    0.00     319/375730      get_sortable_move_list [13]
+                0.00    0.00     448/1003108     tt_hashtable_get [18]
+                0.00    0.00     561/2400933     color_to_move_of [17]
+                0.00    0.00     319/375730      tt_hashtable_put [34]
+                0.00    0.00    6696/23185210     ptype_mv_of [28]
+                0.00    0.00    6696/23185210     rot_of [32]
+                0.00    0.00    6696/35742863     ori_of [31]
+                0.00    0.00    6696/23185210     from_square [37]
+                0.00    0.00    6696/23185210     to_square [38]
+                0.00    0.00     319/375730      update_transposition_table [43]
+                0.00    0.00     265/29582       tt_move_of [45]
+                               13524             evaluateMove <cycle 1> [4]
+-----------------------------------------------
+                0.00    0.00    6696/23185210     searchPV <cycle 1> [36]
+                0.00    0.00  893823/23185210     evaluateMove <cycle 1> [4]
+                0.00    0.00 22284691/23185210     get_sortable_move_list [13]
+[37]     0.0    0.00    0.00 23185210         from_square [37]
+-----------------------------------------------
+                0.00    0.00    6696/23185210     searchPV <cycle 1> [36]
+                0.00    0.00  893823/23185210     evaluateMove <cycle 1> [4]
+                0.00    0.00 22284691/23185210     get_sortable_move_list [13]
+[38]     0.0    0.00    0.00 23185210         to_square [38]
+-----------------------------------------------
+                0.00    0.00     490/9565416     searchRoot [1]
+                0.00    0.00 9564926/9565416     evaluateMove <cycle 1> [4]
+[39]     0.0    0.00    0.00 9565416         is_KO [39]
+-----------------------------------------------
+                0.00    0.00  375413/5232674     mark_laser_path [23]
+                0.00    0.00 1619087/5232674     pawnpin [7]
+                0.00    0.00 1619087/5232674     mobility [10]
+                0.00    0.00 1619087/5232674     h_squares_attackable [8]
+[40]     0.0    0.00    0.00 5232674         reflect_of [40]
+-----------------------------------------------
+                0.00    0.00 1002343/1002343     evaluateMove <cycle 1> [4]
+[41]     0.0    0.00    0.00 1002343         victim_exists [41]
+-----------------------------------------------
+                0.00    0.00  375730/375730      update_transposition_table [43]
+[42]     0.0    0.00    0.00  375730         tt_adjust_score_for_hashtable [42]
+-----------------------------------------------
+                0.00    0.00     319/375730      searchPV <cycle 1> [36]
+                0.00    0.00  375411/375730      evaluateMove <cycle 1> [4]
+[43]     0.0    0.00    0.00  375730         update_transposition_table [43]
+                0.00    0.00  375730/375730      tt_adjust_score_for_hashtable [42]
+-----------------------------------------------
+                0.00    0.00  134452/134452      evaluate_as_leaf [5]
+[44]     0.0    0.00    0.00  134452         tt_adjust_score_from_hashtable [44]
+-----------------------------------------------
+                0.00    0.00     265/29582       searchPV <cycle 1> [36]
+                0.00    0.00   29317/29582       evaluate_as_leaf [5]
+[45]     0.0    0.00    0.00   29582         tt_move_of [45]
+-----------------------------------------------
+                0.00    0.00      70/8263        searchRoot [1]
+                0.00    0.00    8193/8263        init_zob [12]
+[46]     0.0    0.00    0.00    8263         myrand [46]
+-----------------------------------------------
+                0.00    0.00       1/262         init_abort_timer [55]
+                0.00    0.00       7/262         elapsed_time [50]
+                0.00    0.00      10/262         searchRoot [1]
+                0.00    0.00     244/262         evaluateMove <cycle 1> [4]
+[47]     0.0    0.00    0.00     262         milliseconds [47]
+-----------------------------------------------
+                0.00    0.00       1/39          UciBeginSearch [2]
+                0.00    0.00      38/39          searchRoot [1]
+[48]     0.0    0.00    0.00      39         move_to_str [48]
+-----------------------------------------------
+                0.00    0.00      16/16          fen_to_pos [19]
+[49]     0.0    0.00    0.00      16         set_ori [49]
+-----------------------------------------------
+                0.00    0.00       7/7           UciBeginSearch [2]
+[50]     0.0    0.00    0.00       7         elapsed_time [50]
+                0.00    0.00       7/262         milliseconds [47]
+-----------------------------------------------
+                0.00    0.00       7/7           UciBeginSearch [2]
+[51]     0.0    0.00    0.00       7         reset_abort [51]
+-----------------------------------------------
+                0.00    0.00       7/7           UciBeginSearch [2]
+[52]     0.0    0.00    0.00       7         should_abort [52]
+-----------------------------------------------
+                0.00    0.00       1/1           fen_to_pos [19]
+[53]     0.0    0.00    0.00       1         compute_zob_key [53]
+-----------------------------------------------
+                0.00    0.00       1/1           fen_to_pos [19]
+[54]     0.0    0.00    0.00       1         get_sq_from_str [54]
+-----------------------------------------------
+                0.00    0.00       1/1           UciBeginSearch [2]
+[55]     0.0    0.00    0.00       1         init_abort_timer [55]
+                0.00    0.00       1/262         milliseconds [47]
+-----------------------------------------------
+                0.00    0.00       1/1           UciBeginSearch [2]
+[56]     0.0    0.00    0.00       1         init_best_move_history [56]
+-----------------------------------------------
+                0.00    0.00       1/1           UciBeginSearch [2]
+[57]     0.0    0.00    0.00       1         init_tics [57]
+-----------------------------------------------
+                0.00    0.00       1/1           UciBeginSearch [2]
+[58]     0.0    0.00    0.00       1         tt_age_hashtable [58]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [27] beam_of                [12] init_zob                [1] searchRoot
+  [15] color_of               [39] is_KO                  [21] set_color
+  [17] color_to_move_of       [30] kaggressive            [49] set_ori
+  [53] compute_zob_key         [9] make_move              [26] set_ptype
+  [25] dir_of                 [23] mark_laser_path        [52] should_abort
+  [50] elapsed_time           [47] milliseconds           [11] square_of
+   [6] eval                   [10] mobility               [38] to_square
+   [4] evaluateMove           [48] move_to_str            [42] tt_adjust_score_for_hashtable
+   [5] evaluate_as_leaf       [46] myrand                 [44] tt_adjust_score_from_hashtable
+  [20] fil_of                 [33] opp_color              [58] tt_age_hashtable
+  [35] fire                   [31] ori_of                 [18] tt_hashtable_get
+  [37] from_square             [7] pawnpin                [34] tt_hashtable_put
+  [14] generate_all           [28] ptype_mv_of            [29] tt_is_usable
+  [13] get_sortable_move_list (search_common.c) [16] ptype_of [45] tt_move_of
+  [54] get_sq_from_str (fen.c) [40] reflect_of            [43] update_transposition_table (search_globals.c)
+   [8] h_squares_attackable   [51] reset_abort            [41] victim_exists
+  [55] init_abort_timer       [22] rnk_of                 [24] zero_victims
+  [56] init_best_move_history [32] rot_of                  [3] <cycle 1>
+  [57] init_tics              [36] searchPV (search.c)
