@@ -367,6 +367,20 @@ moveEvaluationResult* evaluateMove(searchNode *node, move_t mv, move_t killer_a,
 
 // Incremental sort of the move list.
 void sort_incremental(sortable_move_t *move_list, int num_of_moves, int mv_index) {
+    
+    int hole = mv_index;
+    for (int j = mv_index+1; j < num_of_moves; j++) {
+        if ((uint64_t) move_list[j] > (uint64_t) move_list[hole]) {
+            hole = j;
+        }
+    }
+    uint64_t t = move_list[hole];
+    move_list[hole] = move_list[mv_index];
+    move_list[mv_index] = t;
+    
+}
+
+void sort_incremental_full(sortable_move_t *move_list, int num_of_moves, int mv_index) {
   for (int j = 0; j < num_of_moves; j++) {
     sortable_move_t insert = move_list[j];
     int hole = j;
