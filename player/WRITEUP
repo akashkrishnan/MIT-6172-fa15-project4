@@ -53,12 +53,22 @@ Each sample counts as 0.01 seconds.
   0.42      2.39     0.01      468     0.02     0.02  searchPV
   0.42      2.40     0.01       39     0.26     0.26  move_to_str
 
+Sorting
+After applied optimizations mentioned above, we obtained the following profiling results using perf:
+32.39% eval
+26.50% scout_search.part.8
+20.65% make_move
+8.79% generate_all
+
+Annotation of scout_seach function show that about 50% goes for sorting nodes using sort_incremetal() function. This function uses insertion sort, which shows good performance on a small number of elements.
+
+The same function is used in full search (searchPV) function, but there was a significant difference that in scout_search it is called once, but in searchPV it is called in each iteration. The latter was found to be redundant, because the priorities of the moves do not change over iterations, so sorting once is enough. Experimental optimization (applying different sorting algorithms) showed that insertion search in scout_search is still the best, but applying selection sort in searchPV, where each selection goes in each iteration improves result on ~5-10% on the low depth levels.
+
 Planned optimizations:
 
-We still need to make eval, evaluateMove, make_move, generate_all, tt_hastable_get, get_sortable_move_list, mark_laser_path, evaluate_as_leaf, and tt_is_usable faster. We also should come up with better ways to prune moves in our program, since we have not yet touched any heuristics. Alvis had worked on incremental search that did not make it into the beta submission, and Akash had a change to the h_dist function that also did not make it. We also tried using smaller array size for the board but not successfully.
+We still need to make eval, evaluateMove, make_move, generate_all, tt_hastable_get, get_sortable_move_list, mark_laser_path, evaluate_as_leaf, and tt_is_usable faster. We also should come up with better ways to prune moves in our program, since we have not yet touched any heuristics. Akash had a change to the h_dist function that also did not make it. We also tried using smaller array size for the board but not successfully.
 
 Dividing up the work:
 
-Because our group was formed late and made up of random members, we didn’t have a lot of time to divide up the work and work together for Beta 1. Hongyi and Huy did most of the work for this Beta, but Alvis and Akash have made plans to contribute more for the second beta and final.
-
+Because our group was formed late and made up of random members, we didn’t have a lot of time to divide up the work and work together for Beta 1. Hongyi and Huy did most of the work for this Beta, Alvis worked on sorting optimizations, and Akash have made plans to contribute more for the second beta and final.
 
