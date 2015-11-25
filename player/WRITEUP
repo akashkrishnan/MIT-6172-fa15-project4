@@ -1,4 +1,4 @@
-riginal implementation profiling:
+Original implementation profiling:
 The original implementation ran in 4297967 microseconds to a depth of 7. An output of gprof is shown below:
 
 Each sample counts as 0.01 seconds.
@@ -34,10 +34,9 @@ As we can see, the majority of the time is spent on many small functions being c
 
 Changes made so far and effects on runtime:
 
-The changes made for beta 1 lead to a runtime of 1451416 microseconds for depth of 7. This is about a 3x speedup compared to the original. The most important changes that were made for the beta were the inlining of many small functions, including square_of, color_of, ptype_of, rnk_of and fil_of. Instead of calculating many values like in rnk_of, fil_of and pcentral, we created lookup tables to use precomputed values. In order to reduce redundant work, we changed the eval function to only create a single laser map every evaluation. We merged the three position evaluation functions: pawnpin, h_squares_attackable, and mobility to all be calculated at the same time. 
+The changes made for beta 1 lead to a runtime of 1451416 microseconds for depth of 7. This is about a 3x speedup compared to the original. The most important changes that were made for the beta were the inlining of many small functions, including square_of, color_of, ptype_of, rnk_of and fil_of. Instead of calculating many values like in rnk_of, fil_of and pcentral, we created lookup tables to use precomputed values. In order to reduce redundant work, we changed the eval function to use 2 global laser maps and only update them in each evaluation. We merged the three position evaluation functions: pawnpin, h_squares_attackable, and mobility to all be calculated at the same time. 
 
-We improved performance by changing data types and packing structs differently. For example, we changed many int types to use int16_t or int8_t. We also moved around some
-Fixing some instances of passing by value instead of by reference also helped. In the evaluateMove function of search_common.c it now returns a pointer instead of a struct, which we store in a single malloc’ed instance of moveEvaluationResult instead of having multiple instances of this struct.
+We improved performance by changing data types and packing structs differently. For example, we changed many int types to use int16_t or int8_t. We also moved around some of the data types in the position struct so it packed more efficiently. Fixing some instances of passing by value instead of by reference also helped. In the evaluateMove function of search_common.c it now returns a pointer instead of a struct, which we store in a single malloc’ed instance of moveEvaluationResult instead of having multiple instances of this struct.
 
 Each sample counts as 0.01 seconds.
   %   cumulative   self              self     total
@@ -56,7 +55,7 @@ Each sample counts as 0.01 seconds.
 
 Planned optimizations:
 
-We still need to make eval, evaluateMove, make_move, generate_all, tt_hastable_get, get_sortable_move_list, mark_laser_path, evaluate_as_leaf, and tt_is_usable faster. We also should come up with better ways to prune moves in our program, since we have not yet touched any heuristics. Alvis had worked on incremental search that did not make it into the beta submission, and Akash had a change to the h_dist function that also did not make it.
+We still need to make eval, evaluateMove, make_move, generate_all, tt_hastable_get, get_sortable_move_list, mark_laser_path, evaluate_as_leaf, and tt_is_usable faster. We also should come up with better ways to prune moves in our program, since we have not yet touched any heuristics. Alvis had worked on incremental search that did not make it into the beta submission, and Akash had a change to the h_dist function that also did not make it. We also tried using smaller array size for the board but not successfully.
 
 Dividing up the work:
 
