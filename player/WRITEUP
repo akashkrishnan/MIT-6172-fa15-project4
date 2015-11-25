@@ -1,0 +1,65 @@
+riginal implementation profiling:
+The original implementation ran in 4297967 microseconds to a depth of 7. An output of gprof is shown below:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total
+ time   seconds   seconds    calls  ms/call  ms/call  name
+
+18.63      1.38     1.38    13932     0.10     0.49  evaluateMove
+ 12.42      2.30     0.92  1737312     0.00     0.00  pawnpin
+ 10.53      3.08     0.78  1737312     0.00     0.00  h_squares_attackable
+ 10.46      3.86     0.78  9565416     0.00     0.00  make_move
+  9.31      4.55     0.69 1192476383     0.00     0.00  square_of
+  8.10      5.15     0.60   868656     0.00     0.00  eval
+  7.96      5.74     0.59  1737312     0.00     0.00  mobility
+  6.75      6.24     0.50                             init_zob
+  2.43      6.42     0.18   375730     0.00     0.00  get_sortable_move_list
+  1.89      6.56     0.14   375731     0.00     0.00  generate_all
+  1.75      6.69     0.13 246016349     0.00     0.00  color_of
+  1.62      6.81     0.12 234674315     0.00     0.00  ptype_of
+  1.48      6.92     0.11  2400933     0.00     0.00  color_to_move_of
+  1.35      7.02     0.10  1003108     0.00     0.00  tt_hashtable_get
+  0.67      7.07     0.05 62134898     0.00     0.00  fil_of
+  0.67      7.12     0.05 61501224     0.00     0.00  rnk_of
+  0.67      7.17     0.05       16     3.13     3.13  set_color
+  0.54      7.21     0.04   375731     0.00     0.00  mark_laser_path
+  0.40      7.24     0.03 14403428     0.00     0.00  zero_victims
+  0.40      7.27     0.03 13898496     0.00     0.00  dir_of
+  0.40      7.30     0.03      356     0.08     0.08  set_ptype
+  0.27      7.32     0.02 59978493     0.00     0.00  beam_of
+  0.27      7.34     0.02 23185210     0.00     0.00  ptype_mv_of
+  0.27      7.36     0.02   163769     0.00     0.00  tt_is_usable
+
+As we can see, the majority of the time is spent on many small functions being called many times. Optimization should rely on reducing the overhead the call to these functions through inlining as well as reducing the amount of redundant work done.
+
+Changes made so far and effects on runtime:
+
+The changes made for beta 1 lead to a runtime of 1451416 microseconds for depth of 7. This is about a 3x speedup compared to the original. The most important changes that were made for the beta were the inlining of many small functions, including square_of, color_of, ptype_of, rnk_of and fil_of. Instead of calculating many values like in rnk_of, fil_of and pcentral, we created lookup tables to use precomputed values. In order to reduce redundant work, we changed the eval function to only create a single laser map every evaluation. We merged the three position evaluation functions: pawnpin, h_squares_attackable, and mobility to all be calculated at the same time. 
+
+We improved performance by changing data types and packing structs differently. For example, we changed many int types to use int16_t or int8_t. We also moved around some
+Fixing some instances of passing by value instead of by reference also helped. In the evaluateMove function of search_common.c it now returns a pointer instead of a struct, which we store in a single malloc’ed instance of moveEvaluationResult instead of having multiple instances of this struct.
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total
+ time   seconds   seconds    calls  ms/call  ms/call  name
+ 33.34      0.80     0.80   865273     0.00     0.00  eval
+ 29.17      1.50     0.70    14825     0.05     0.16  evaluateMove
+ 20.42      1.99     0.49  9377699     0.00     0.00  make_move
+  8.34      2.19     0.20   364577     0.00     0.00  generate_all
+  3.33      2.27     0.08   995901     0.00     0.00  tt_hashtable_get
+  2.08      2.32     0.05   364576     0.00     0.00  get_sortable_move_list
+  1.25      2.35     0.03   364577     0.00     0.00  mark_laser_path
+  0.83      2.37     0.02   995433     0.00     0.00  evaluate_as_leaf
+  0.42      2.38     0.01   159751     0.00     0.00  tt_is_usable
+  0.42      2.39     0.01      468     0.02     0.02  searchPV
+  0.42      2.40     0.01       39     0.26     0.26  move_to_str
+
+Planned optimizations:
+
+We still need to make eval, evaluateMove, make_move, generate_all, tt_hastable_get, get_sortable_move_list, mark_laser_path, evaluate_as_leaf, and tt_is_usable faster. We also should come up with better ways to prune moves in our program, since we have not yet touched any heuristics. Alvis had worked on incremental search that did not make it into the beta submission, and Akash had a change to the h_dist function that also did not make it.
+
+Dividing up the work:
+
+Because our group was formed late and made up of random members, we didn’t have a lot of time to divide up the work and work together for Beta 1. Hongyi and Huy did most of the work for this Beta, but Alvis and Akash have made plans to contribute more for the second beta and final.
+
+
