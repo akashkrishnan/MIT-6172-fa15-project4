@@ -306,6 +306,36 @@ float h_dist(square_t a, square_t b) {
   return hdist_table[df][dr];
 }
 
+void hdist_table_generate() {
+  int size = 10;
+  int size2 = (size-1)*2+1;
+
+  float hdist_table[size2][size2];
+  for (int af = 0; af < size; af++) {
+    for (int ar = 0; ar < size; ar++) {
+      for (int bf = 0; bf < size; bf++) {
+        for (int br = 0; br < size; br++) {
+          int df = af - bf + size - 1;
+          int dr = ar - br + size - 1;
+          hdist_table[df][dr] = (1.0 / (abs(df - size + 1) + 1)) + (1.0 / (abs(dr - size + 1) + 1));
+        }
+      }
+    }
+  }
+
+  FILE *f = fopen("hdist_table.c", "w");
+  fprintf(f, "static float hdist_table[%d][%d] = {\n", size2, size2);
+  for (int a = 0; a < size2; a++) {
+    fprintf(f, "{");
+    for (int b = 0; b < size2; b++) {
+      fprintf(f, "%.6f,", hdist_table[a][b]);
+    }
+    fprintf(f, "},\n");
+  }
+  fprintf(f, "};\n");
+  fclose(f);
+}
+
 // H_SQUARES_ATTACKABLE heuristic: for shooting the enemy king
 int h_squares_attackable(position_t *p, color_t c) {
   char* laser_map;
