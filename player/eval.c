@@ -1,6 +1,7 @@
 // Copyright (c) 2015 MIT License by 6.172 Staff
 
 #include "./eval.h"
+#include "./hdist_table.c"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -289,7 +290,7 @@ int mobility(position_t *p, color_t color) {
 
 
 // Harmonic-ish distance: 1/(|dx|+1) + 1/(|dy|+1)
-float h_dist(square_t a, square_t b) {
+float h_dist_old(square_t a, square_t b) {
   //  printf("a = %d, FIL(a) = %d, RNK(a) = %d\n", a, FIL(a), RNK(a));
   //  printf("b = %d, FIL(b) = %d, RNK(b) = %d\n", b, FIL(b), RNK(b));
   int delta_fil = abs(fil_of(a) - fil_of(b));
@@ -297,6 +298,12 @@ float h_dist(square_t a, square_t b) {
   float x = (1.0 / (delta_fil + 1)) + (1.0 / (delta_rnk + 1));
   //  printf("max_dist = %d\n\n", x);
   return x;
+}
+
+float h_dist(square_t a, square_t b) {
+  int df = fil_of(a) - fil_of(b) + 9;
+  int dr = rnk_of(a) - rnk_of(b) + 9;
+  return hdist_table[df][dr];
 }
 
 // H_SQUARES_ATTACKABLE heuristic: for shooting the enemy king
