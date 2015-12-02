@@ -17,24 +17,18 @@
 #define MAX_CHARS_IN_MOVE 16  // Could be less
 #define MAX_CHARS_IN_TOKEN 64
 
-// the board (which is 8x8 or 10x10) is centered in a 16x16 array
 #define ARR_WIDTH 16
 #define ARR_SIZE (ARR_WIDTH * ARR_WIDTH)
 
 // board is 8 x 8 or 10 x 10
 #define BOARD_WIDTH 10
 
-typedef int16_t square_t;
+typedef uint8_t square_t;
 typedef int8_t rnk_t;
 typedef int8_t fil_t;
 
 #define FIL_ORIGIN ((ARR_WIDTH - BOARD_WIDTH) / 2)
 #define RNK_ORIGIN ((ARR_WIDTH - BOARD_WIDTH) / 2)
-
-#define FIL_SHIFT 4
-#define FIL_MASK 15
-#define RNK_SHIFT 0
-#define RNK_MASK 15
 
 // -----------------------------------------------------------------------------
 // pieces
@@ -42,7 +36,7 @@ typedef int8_t fil_t;
 
 #define PIECE_SIZE 5  // Number of bits in (ptype, color, orientation)
 
-typedef int8_t piece_t;
+typedef int16_t piece_t; //high-order 8 bits are position, low-order 8 bits are ptype, color, orientation
 
 // -----------------------------------------------------------------------------
 // piece types
@@ -137,7 +131,7 @@ typedef struct victims_t {
 // -----------------------------------------------------------------------------
 
 typedef struct position {
-  piece_t      board[ARR_SIZE];
+  piece_t      board[ARR_SIZE];           // variable number of pieces
   struct position  *history;     // history of position
   uint64_t     key;              // hash key
   move_t       last_move;        // move that led to this position
@@ -163,11 +157,6 @@ static inline color_t color_of(piece_t x) {
 
 static inline color_t opp_color(color_t c) {
   return (color_t) (c ^ 1);
-  //if (c == WHITE) {
-  //  return BLACK;
-  //} else {
-  //  return WHITE;
-  //}
 }
 
 
@@ -196,7 +185,6 @@ static inline void set_ori(piece_t *x, int ori) {
       (*x & ~(ORI_MASK << ORI_SHIFT));
 }
 void init_zob();
-// For no square, use 0, which is guaranteed to be off board
 static inline square_t square_of(fil_t f, rnk_t r) {
   square_t s = ARR_WIDTH * (FIL_ORIGIN + f) + RNK_ORIGIN + r;
   DEBUG_LOG(1, "Square of (file %d, rank %d) is %d\n", f, r, s);
@@ -205,11 +193,6 @@ static inline square_t square_of(fil_t f, rnk_t r) {
 }
 
 // Finds file of square
-static inline fil_t fil_of_old(square_t sq) {
-  fil_t f = ((sq >> FIL_SHIFT) & FIL_MASK) - FIL_ORIGIN;
-  DEBUG_LOG(1, "File of square %d is %d\n", sq, f);
-  return f;
-}
 
 static fil_t fil_of_table[256] = {
 -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3,
@@ -236,11 +219,6 @@ static inline fil_t fil_of(square_t sq) {
   return f;
 }
 // Finds rank of square
-static inline rnk_t rnk_of_old(square_t sq) {
-  rnk_t r = ((sq >> RNK_SHIFT) & RNK_MASK) - RNK_ORIGIN;
-  DEBUG_LOG(1, "Rank of square %d is %d\n", sq, r);
-  return r;
-}
 
 static rnk_t rnk_of_table[256] = {
 -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,

@@ -3,35 +3,35 @@ Flat profile:
 Each sample counts as 0.01 seconds.
   %   cumulative   self              self     total           
  time   seconds   seconds    calls  ms/call  ms/call  name    
- 33.34      0.80     0.80   865273     0.00     0.00  eval
- 29.17      1.50     0.70    14825     0.05     0.16  evaluateMove
- 20.42      1.99     0.49  9377699     0.00     0.00  make_move
-  8.34      2.19     0.20   364577     0.00     0.00  generate_all
-  3.33      2.27     0.08   995901     0.00     0.00  tt_hashtable_get
-  2.08      2.32     0.05   364576     0.00     0.00  get_sortable_move_list
-  1.25      2.35     0.03   364577     0.00     0.00  mark_laser_path
-  0.83      2.37     0.02   995433     0.00     0.00  evaluate_as_leaf
-  0.42      2.38     0.01   159751     0.00     0.00  tt_is_usable
-  0.42      2.39     0.01      468     0.02     0.02  searchPV
-  0.42      2.40     0.01       39     0.26     0.26  move_to_str
-  0.00      2.40     0.00   995061     0.00     0.00  victim_exists
-  0.00      2.40     0.00   364576     0.00     0.00  tt_adjust_score_for_hashtable
-  0.00      2.40     0.00   364576     0.00     0.00  tt_hashtable_put
-  0.00      2.40     0.00   364576     0.00     0.00  update_transposition_table
-  0.00      2.40     0.00   130628     0.00     0.00  tt_adjust_score_from_hashtable
-  0.00      2.40     0.00    29405     0.00     0.00  tt_move_of
-  0.00      2.40     0.00     8263     0.00     0.00  myrand
-  0.00      2.40     0.00      261     0.00     0.00  milliseconds
-  0.00      2.40     0.00        7     0.00     0.00  elapsed_time
-  0.00      2.40     0.00        7     0.00     0.00  reset_abort
-  0.00      2.40     0.00        7     0.00   342.91  searchRoot
-  0.00      2.40     0.00        7     0.00     0.00  should_abort
-  0.00      2.40     0.00        1     0.00     0.00  compute_zob_key
-  0.00      2.40     0.00        1     0.00     0.00  get_sq_from_str
-  0.00      2.40     0.00        1     0.00     0.00  init_abort_timer
-  0.00      2.40     0.00        1     0.00     0.00  init_best_move_history
-  0.00      2.40     0.00        1     0.00     0.00  init_tics
-  0.00      2.40     0.00        1     0.00     0.00  tt_age_hashtable
+ 32.49      0.76     0.76    14825     0.05     0.16  evaluateMove
+ 30.78      1.48     0.72  9377699     0.00     0.00  make_move
+ 25.22      2.07     0.59   865273     0.00     0.00  eval
+  5.56      2.20     0.13   364577     0.00     0.00  generate_all
+  3.42      2.28     0.08   364576     0.00     0.00  get_sortable_move_list
+  2.14      2.33     0.05   995901     0.00     0.00  tt_hashtable_get
+  0.43      2.34     0.01   364577     0.00     0.00  mark_laser_path
+  0.00      2.34     0.00   995433     0.00     0.00  evaluate_as_leaf
+  0.00      2.34     0.00   995061     0.00     0.00  victim_exists
+  0.00      2.34     0.00   364576     0.00     0.00  tt_adjust_score_for_hashtable
+  0.00      2.34     0.00   364576     0.00     0.00  tt_hashtable_put
+  0.00      2.34     0.00   364576     0.00     0.00  update_transposition_table
+  0.00      2.34     0.00   159751     0.00     0.00  tt_is_usable
+  0.00      2.34     0.00   130628     0.00     0.00  tt_adjust_score_from_hashtable
+  0.00      2.34     0.00    29405     0.00     0.00  tt_move_of
+  0.00      2.34     0.00     8263     0.00     0.00  myrand
+  0.00      2.34     0.00      468     0.00     0.00  searchPV
+  0.00      2.34     0.00      261     0.00     0.00  milliseconds
+  0.00      2.34     0.00       39     0.00     0.00  move_to_str
+  0.00      2.34     0.00        7     0.00     0.00  elapsed_time
+  0.00      2.34     0.00        7     0.00     0.00  reset_abort
+  0.00      2.34     0.00        7     0.00   334.37  searchRoot
+  0.00      2.34     0.00        7     0.00     0.00  should_abort
+  0.00      2.34     0.00        1     0.00     0.00  compute_zob_key
+  0.00      2.34     0.00        1     0.00     0.00  get_sq_from_str
+  0.00      2.34     0.00        1     0.00     0.00  init_abort_timer
+  0.00      2.34     0.00        1     0.00     0.00  init_best_move_history
+  0.00      2.34     0.00        1     0.00     0.00  init_tics
+  0.00      2.34     0.00        1     0.00     0.00  tt_age_hashtable
 
  %         the percentage of the total running time of the
 time       program used by this function.
@@ -69,13 +69,22 @@ notice and this notice are preserved.
 		     Call graph (explanation follows)
 
 
-granularity: each sample hit covers 2 byte(s) for 0.42% of 2.40 seconds
+granularity: each sample hit covers 2 byte(s) for 0.43% of 2.34 seconds
 
 index % time    self  children    called     name
+                0.00    2.34       7/7           UciBeginSearch [2]
+[1]    100.0    0.00    2.34       7         searchRoot [1]
+                0.64    1.33     408/485         evaluateMove <cycle 1> [4]
+                0.12    0.25      77/485         searchPV <cycle 1> [12]
+                0.00    0.00     490/9377699     make_move [5]
+                0.00    0.00       1/364577      generate_all [9]
+                0.00    0.00      70/8263        myrand [20]
+                0.00    0.00      38/39          move_to_str [22]
+                0.00    0.00      10/261         milliseconds [21]
+-----------------------------------------------
                                                  <spontaneous>
-[1]    100.0    0.00    2.40                 UciBeginSearch [1]
-                0.00    2.40       7/7           searchRoot [2]
-                0.00    0.00       1/39          move_to_str [14]
+[2]    100.0    0.00    2.34                 UciBeginSearch [2]
+                0.00    2.34       7/7           searchRoot [1]
                 0.00    0.00       7/7           reset_abort [24]
                 0.00    0.00       7/7           elapsed_time [23]
                 0.00    0.00       7/7           should_abort [25]
@@ -83,126 +92,117 @@ index % time    self  children    called     name
                 0.00    0.00       1/1           init_abort_timer [28]
                 0.00    0.00       1/1           init_tics [30]
                 0.00    0.00       1/1           tt_age_hashtable [31]
+                0.00    0.00       1/39          move_to_str [22]
 -----------------------------------------------
-                0.00    2.40       7/7           UciBeginSearch [1]
-[2]    100.0    0.00    2.40       7         searchRoot [2]
-                0.60    1.41     408/485         evaluateMove <cycle 1> [4]
-                0.11    0.27      77/485         searchPV <cycle 1> [12]
-                0.01    0.00      38/39          move_to_str [14]
-                0.00    0.00     490/9377699     make_move [7]
-                0.00    0.00       1/364577      generate_all [9]
-                0.00    0.00      70/8263        myrand [21]
-                0.00    0.00      10/261         milliseconds [22]
------------------------------------------------
-[3]     99.6    0.71    1.68     485+14808   <cycle 1 as a whole> [3]
-                0.70    1.68   14825+10357817     evaluateMove <cycle 1> [4]
-                0.01    0.00     468             searchPV <cycle 1> [12]
+[3]    100.0    0.76    1.58     485+14808   <cycle 1 as a whole> [3]
+                0.76    1.58   14825+10357817     evaluateMove <cycle 1> [4]
+                0.00    0.00     468             searchPV <cycle 1> [12]
 -----------------------------------------------
                              10357817             evaluateMove <cycle 1> [4]
                                14417             searchPV <cycle 1> [12]
-                0.60    1.41     408/485         searchRoot [2]
-[4]     99.1    0.70    1.68   14825+10357817 evaluateMove <cycle 1> [4]
-                0.02    0.89  995433/995433      evaluate_as_leaf [5]
-                0.49    0.00 9377209/9377699     make_move [7]
-                0.05    0.23  364239/364576      get_sortable_move_list [8]
-                0.00    0.00  995061/995061      victim_exists [15]
-                0.00    0.00  364239/364576      tt_hashtable_put [17]
-                0.00    0.00  364239/364576      update_transposition_table [18]
-                0.00    0.00     243/261         milliseconds [22]
+                0.64    1.33     408/485         searchRoot [1]
+[4]    100.0    0.76    1.58   14825+10357817 evaluateMove <cycle 1> [4]
+                0.72    0.00 9377209/9377699     make_move [5]
+                0.00    0.64  995433/995433      evaluate_as_leaf [6]
+                0.08    0.14  364239/364576      get_sortable_move_list [8]
+                0.00    0.00  995061/995061      victim_exists [13]
+                0.00    0.00  364239/364576      tt_hashtable_put [15]
+                0.00    0.00  364239/364576      update_transposition_table [16]
+                0.00    0.00     243/261         milliseconds [21]
                                  391             searchPV <cycle 1> [12]
                              10357817             evaluateMove <cycle 1> [4]
 -----------------------------------------------
-                0.02    0.89  995433/995433      evaluateMove <cycle 1> [4]
-[5]     37.9    0.02    0.89  995433         evaluate_as_leaf [5]
-                0.80    0.00  864805/865273      eval [6]
-                0.08    0.00  995433/995901      tt_hashtable_get [10]
-                0.01    0.00  159751/159751      tt_is_usable [13]
-                0.00    0.00  130628/130628      tt_adjust_score_from_hashtable [19]
-                0.00    0.00   29123/29405       tt_move_of [20]
+                0.00    0.00     490/9377699     searchRoot [1]
+                0.72    0.00 9377209/9377699     evaluateMove <cycle 1> [4]
+[5]     30.8    0.72    0.00 9377699         make_move [5]
+-----------------------------------------------
+                0.00    0.64  995433/995433      evaluateMove <cycle 1> [4]
+[6]     27.3    0.00    0.64  995433         evaluate_as_leaf [6]
+                0.59    0.00  864805/865273      eval [7]
+                0.05    0.00  995433/995901      tt_hashtable_get [10]
+                0.00    0.00  159751/159751      tt_is_usable [17]
+                0.00    0.00  130628/130628      tt_adjust_score_from_hashtable [18]
+                0.00    0.00   29123/29405       tt_move_of [19]
 -----------------------------------------------
                 0.00    0.00     468/865273      searchPV <cycle 1> [12]
-                0.80    0.00  864805/865273      evaluate_as_leaf [5]
-[6]     33.3    0.80    0.00  865273         eval [6]
------------------------------------------------
-                0.00    0.00     490/9377699     searchRoot [2]
-                0.49    0.00 9377209/9377699     evaluateMove <cycle 1> [4]
-[7]     20.4    0.49    0.00 9377699         make_move [7]
+                0.59    0.00  864805/865273      evaluate_as_leaf [6]
+[7]     25.2    0.59    0.00  865273         eval [7]
 -----------------------------------------------
                 0.00    0.00     337/364576      searchPV <cycle 1> [12]
-                0.05    0.23  364239/364576      evaluateMove <cycle 1> [4]
-[8]     11.7    0.05    0.23  364576         get_sortable_move_list [8]
-                0.20    0.03  364576/364577      generate_all [9]
+                0.08    0.14  364239/364576      evaluateMove <cycle 1> [4]
+[8]      9.4    0.08    0.14  364576         get_sortable_move_list [8]
+                0.13    0.01  364576/364577      generate_all [9]
 -----------------------------------------------
-                0.00    0.00       1/364577      searchRoot [2]
-                0.20    0.03  364576/364577      get_sortable_move_list [8]
-[9]      9.6    0.20    0.03  364577         generate_all [9]
-                0.03    0.00  364577/364577      mark_laser_path [11]
+                0.00    0.00       1/364577      searchRoot [1]
+                0.13    0.01  364576/364577      get_sortable_move_list [8]
+[9]      6.0    0.13    0.01  364577         generate_all [9]
+                0.01    0.00  364577/364577      mark_laser_path [11]
 -----------------------------------------------
                 0.00    0.00     468/995901      searchPV <cycle 1> [12]
-                0.08    0.00  995433/995901      evaluate_as_leaf [5]
-[10]     3.3    0.08    0.00  995901         tt_hashtable_get [10]
+                0.05    0.00  995433/995901      evaluate_as_leaf [6]
+[10]     2.1    0.05    0.00  995901         tt_hashtable_get [10]
 -----------------------------------------------
-                0.03    0.00  364577/364577      generate_all [9]
-[11]     1.2    0.03    0.00  364577         mark_laser_path [11]
+                0.01    0.00  364577/364577      generate_all [9]
+[11]     0.4    0.01    0.00  364577         mark_laser_path [11]
 -----------------------------------------------
                                  391             evaluateMove <cycle 1> [4]
-                0.11    0.27      77/485         searchRoot [2]
-[12]     0.4    0.01    0.00     468         searchPV <cycle 1> [12]
-                0.00    0.00     468/865273      eval [6]
+                0.12    0.25      77/485         searchRoot [1]
+[12]     0.0    0.00    0.00     468         searchPV <cycle 1> [12]
+                0.00    0.00     468/865273      eval [7]
                 0.00    0.00     337/364576      get_sortable_move_list [8]
                 0.00    0.00     468/995901      tt_hashtable_get [10]
-                0.00    0.00     337/364576      tt_hashtable_put [17]
-                0.00    0.00     337/364576      update_transposition_table [18]
-                0.00    0.00     282/29405       tt_move_of [20]
+                0.00    0.00     337/364576      tt_hashtable_put [15]
+                0.00    0.00     337/364576      update_transposition_table [16]
+                0.00    0.00     282/29405       tt_move_of [19]
                                14417             evaluateMove <cycle 1> [4]
 -----------------------------------------------
-                0.01    0.00  159751/159751      evaluate_as_leaf [5]
-[13]     0.4    0.01    0.00  159751         tt_is_usable [13]
------------------------------------------------
-                0.00    0.00       1/39          UciBeginSearch [1]
-                0.01    0.00      38/39          searchRoot [2]
-[14]     0.4    0.01    0.00      39         move_to_str [14]
------------------------------------------------
                 0.00    0.00  995061/995061      evaluateMove <cycle 1> [4]
-[15]     0.0    0.00    0.00  995061         victim_exists [15]
+[13]     0.0    0.00    0.00  995061         victim_exists [13]
 -----------------------------------------------
-                0.00    0.00  364576/364576      update_transposition_table [18]
-[16]     0.0    0.00    0.00  364576         tt_adjust_score_for_hashtable [16]
------------------------------------------------
-                0.00    0.00     337/364576      searchPV <cycle 1> [12]
-                0.00    0.00  364239/364576      evaluateMove <cycle 1> [4]
-[17]     0.0    0.00    0.00  364576         tt_hashtable_put [17]
+                0.00    0.00  364576/364576      update_transposition_table [16]
+[14]     0.0    0.00    0.00  364576         tt_adjust_score_for_hashtable [14]
 -----------------------------------------------
                 0.00    0.00     337/364576      searchPV <cycle 1> [12]
                 0.00    0.00  364239/364576      evaluateMove <cycle 1> [4]
-[18]     0.0    0.00    0.00  364576         update_transposition_table [18]
-                0.00    0.00  364576/364576      tt_adjust_score_for_hashtable [16]
+[15]     0.0    0.00    0.00  364576         tt_hashtable_put [15]
 -----------------------------------------------
-                0.00    0.00  130628/130628      evaluate_as_leaf [5]
-[19]     0.0    0.00    0.00  130628         tt_adjust_score_from_hashtable [19]
+                0.00    0.00     337/364576      searchPV <cycle 1> [12]
+                0.00    0.00  364239/364576      evaluateMove <cycle 1> [4]
+[16]     0.0    0.00    0.00  364576         update_transposition_table [16]
+                0.00    0.00  364576/364576      tt_adjust_score_for_hashtable [14]
+-----------------------------------------------
+                0.00    0.00  159751/159751      evaluate_as_leaf [6]
+[17]     0.0    0.00    0.00  159751         tt_is_usable [17]
+-----------------------------------------------
+                0.00    0.00  130628/130628      evaluate_as_leaf [6]
+[18]     0.0    0.00    0.00  130628         tt_adjust_score_from_hashtable [18]
 -----------------------------------------------
                 0.00    0.00     282/29405       searchPV <cycle 1> [12]
-                0.00    0.00   29123/29405       evaluate_as_leaf [5]
-[20]     0.0    0.00    0.00   29405         tt_move_of [20]
+                0.00    0.00   29123/29405       evaluate_as_leaf [6]
+[19]     0.0    0.00    0.00   29405         tt_move_of [19]
 -----------------------------------------------
-                0.00    0.00      70/8263        searchRoot [2]
-                0.00    0.00    8193/8263        init_zob [53]
-[21]     0.0    0.00    0.00    8263         myrand [21]
+                0.00    0.00      70/8263        searchRoot [1]
+                0.00    0.00    8193/8263        init_zob [56]
+[20]     0.0    0.00    0.00    8263         myrand [20]
 -----------------------------------------------
                 0.00    0.00       1/261         init_abort_timer [28]
                 0.00    0.00       7/261         elapsed_time [23]
-                0.00    0.00      10/261         searchRoot [2]
+                0.00    0.00      10/261         searchRoot [1]
                 0.00    0.00     243/261         evaluateMove <cycle 1> [4]
-[22]     0.0    0.00    0.00     261         milliseconds [22]
+[21]     0.0    0.00    0.00     261         milliseconds [21]
 -----------------------------------------------
-                0.00    0.00       7/7           UciBeginSearch [1]
+                0.00    0.00       1/39          UciBeginSearch [2]
+                0.00    0.00      38/39          searchRoot [1]
+[22]     0.0    0.00    0.00      39         move_to_str [22]
+-----------------------------------------------
+                0.00    0.00       7/7           UciBeginSearch [2]
 [23]     0.0    0.00    0.00       7         elapsed_time [23]
-                0.00    0.00       7/261         milliseconds [22]
+                0.00    0.00       7/261         milliseconds [21]
 -----------------------------------------------
-                0.00    0.00       7/7           UciBeginSearch [1]
+                0.00    0.00       7/7           UciBeginSearch [2]
 [24]     0.0    0.00    0.00       7         reset_abort [24]
 -----------------------------------------------
-                0.00    0.00       7/7           UciBeginSearch [1]
+                0.00    0.00       7/7           UciBeginSearch [2]
 [25]     0.0    0.00    0.00       7         should_abort [25]
 -----------------------------------------------
                 0.00    0.00       1/1           fen_to_pos [44]
@@ -211,17 +211,17 @@ index % time    self  children    called     name
                 0.00    0.00       1/1           fen_to_pos [44]
 [27]     0.0    0.00    0.00       1         get_sq_from_str [27]
 -----------------------------------------------
-                0.00    0.00       1/1           UciBeginSearch [1]
+                0.00    0.00       1/1           UciBeginSearch [2]
 [28]     0.0    0.00    0.00       1         init_abort_timer [28]
-                0.00    0.00       1/261         milliseconds [22]
+                0.00    0.00       1/261         milliseconds [21]
 -----------------------------------------------
-                0.00    0.00       1/1           UciBeginSearch [1]
+                0.00    0.00       1/1           UciBeginSearch [2]
 [29]     0.0    0.00    0.00       1         init_best_move_history [29]
 -----------------------------------------------
-                0.00    0.00       1/1           UciBeginSearch [1]
+                0.00    0.00       1/1           UciBeginSearch [2]
 [30]     0.0    0.00    0.00       1         init_tics [30]
 -----------------------------------------------
-                0.00    0.00       1/1           UciBeginSearch [1]
+                0.00    0.00       1/1           UciBeginSearch [2]
 [31]     0.0    0.00    0.00       1         tt_age_hashtable [31]
 -----------------------------------------------
 
@@ -315,13 +315,13 @@ notice and this notice are preserved.
 
 Index by function name
 
-  [26] compute_zob_key        [30] init_tics              [16] tt_adjust_score_for_hashtable
-  [23] elapsed_time            [7] make_move              [19] tt_adjust_score_from_hashtable
-   [6] eval                   [11] mark_laser_path        [31] tt_age_hashtable
-   [4] evaluateMove           [22] milliseconds           [10] tt_hashtable_get
-   [5] evaluate_as_leaf       [14] move_to_str            [17] tt_hashtable_put
-   [9] generate_all           [21] myrand                 [13] tt_is_usable
-   [8] get_sortable_move_list (search_common.c) [24] reset_abort [20] tt_move_of
-  [27] get_sq_from_str (fen.c) [12] searchPV (search.c)   [18] update_transposition_table (search_globals.c)
-  [28] init_abort_timer        [2] searchRoot             [15] victim_exists
+  [26] compute_zob_key        [30] init_tics              [14] tt_adjust_score_for_hashtable
+  [23] elapsed_time            [5] make_move              [18] tt_adjust_score_from_hashtable
+   [7] eval                   [11] mark_laser_path        [31] tt_age_hashtable
+   [4] evaluateMove           [21] milliseconds           [10] tt_hashtable_get
+   [6] evaluate_as_leaf       [22] move_to_str            [15] tt_hashtable_put
+   [9] generate_all           [20] myrand                 [17] tt_is_usable
+   [8] get_sortable_move_list (search_common.c) [24] reset_abort [19] tt_move_of
+  [27] get_sq_from_str (fen.c) [12] searchPV (search.c)   [16] update_transposition_table (search_globals.c)
+  [28] init_abort_timer        [1] searchRoot             [13] victim_exists
   [29] init_best_move_history [25] should_abort            [3] <cycle 1>
