@@ -45,7 +45,7 @@ static sort_key_t sort_key(sortable_move_t mv) {
 
 static void set_sort_key(sortable_move_t *mv, sort_key_t key) {
   // sort keys must not exceed SORT_MASK
-  //  assert ((0 <= key) && (key <= SORT_MASK));
+  assert ((0 <= key) && (key <= SORT_MASK));
   *mv = ((((uint64_t) key) & SORT_MASK) << SORT_SHIFT) |
         (*mv & ~(SORT_MASK << SORT_SHIFT));
   return;
