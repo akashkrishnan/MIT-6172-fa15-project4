@@ -34,9 +34,9 @@ ifeq ($(REFERENCE),1)
 	CFLAGS += -DRUN_REFERENCE_CODE=1
 endif
 
-CFLAGS += $(OTHER_CFLAGS)
+CFLAGS += $(OTHER_CFLAGS) 
 
-LDFLAGS= -Wall -lrt -lm -lcilkrts -ldl -lpthread -ffast-math
+LDFLAGS= -Wall -lrt -lm -lcilkrts -ldl -lpthread -ffast-math 
 
 .PHONY : default clean
 

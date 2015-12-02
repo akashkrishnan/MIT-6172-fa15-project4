@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
@@ -264,7 +265,7 @@ square_t low_level_make_move(position_t *old, position_t *p, move_t mv) {
       }
     });
 
-  *p = *old;
+  memcpy(p,old,sizeof(position_t));
 
   p->history = old;
   p->last_move = mv;
