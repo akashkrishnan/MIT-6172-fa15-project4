@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <assert.h>
 #include "./tbassert.h"
 
 // -----------------------------------------------------------------------------
@@ -118,7 +119,7 @@ ev_score_t kface(position_t *p, fil_t f, rnk_t r) {
 }
 
 // KAGGRESSIVE heuristic: bonus for King with more space to back
-ev_score_t kaggressive(position_t *p, fil_t f, rnk_t r) {
+ev_score_t kaggressive_old(position_t *p, fil_t f, rnk_t r) {
   square_t sq = square_of(f, r);
   piece_t x = p->board[sq];
   color_t c = color_of(x);
@@ -141,6 +142,27 @@ ev_score_t kaggressive(position_t *p, fil_t f, rnk_t r) {
     bonus = (BOARD_WIDTH - f) * (BOARD_WIDTH - r);
   } else if (delta_fil >= 0 && delta_rnk <= 0) {
     bonus = (f + 1) * (BOARD_WIDTH - r);
+  }
+
+  return (KAGGRESSIVE * bonus) / (BOARD_WIDTH * BOARD_WIDTH);
+}
+
+inline ev_score_t kaggressive(fil_t f, rnk_t r, fil_t otherf, rnk_t otherr) {
+
+  assert(f != otherf);
+  assert(r != otherr);
+  int bonus = 0;
+
+  if (otherf >= f) {   // delta_fil >= 0 is equivalent to otherf >= f
+    bonus = f + 1;
+  } else {
+    bonus = BOARD_WIDTH - f;
+  }
+
+  if (otherr >= r) {   // delta_rnk >= 0 is equivalent to otherr >= r
+    bonus *= r + 1;
+  } else {
+    bonus *= BOARD_WIDTH - r;
   }
 
   return (KAGGRESSIVE * bonus) / (BOARD_WIDTH * BOARD_WIDTH);
@@ -378,6 +400,10 @@ score_t eval(position_t *p, bool verbose) {
       square_t sq = square_of(f, r);
       piece_t x = p->board[sq];
       color_t c = color_of(x);
+      color_t othercolor;
+      square_t otherking;
+      fil_t otherf;
+      rnk_t otherr;
       if (verbose) {
         square_to_str(sq, buf, MAX_CHARS_IN_MOVE);
       }
@@ -418,7 +444,13 @@ score_t eval(position_t *p, bool verbose) {
           score[c] += bonus;
 
           // KAGGRESSIVE heuristic
-          bonus = kaggressive(p, f, r);
+          othercolor = opp_color(c);
+          otherking = p->kloc[othercolor];
+          otherf = fil_of(otherking);
+          otherr = rnk_of(otherking);
+          bonus = kaggressive(f, r, otherf, otherr);
+          assert(bonus == kaggressive_old(p, f, r));
+
           // if (verbose) {
           //   printf("KAGGRESSIVE bonus %d for %s King on %s\n", bonus, color_to_str(c), buf);
          //  }
