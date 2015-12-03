@@ -37,6 +37,7 @@ void laser_map_init() {
   }
 }
 
+float h_dist(square_t a, square_t b);
 float h_attackable = 0;
 
 // Heuristics for static evaluation - described in the google doc
@@ -202,18 +203,19 @@ int mark_laser_path(position_t *p, char *laser_map, color_t c,
   laser_map[sq] |= mark_mask;
 
   // we update h_attackable here
-  h_attackable = 0;
+  if (laser_map[sq] != 0) h_attackable = h_dist(sq, o_king_sq);
 
   while (true) {
     sq += beam;
     laser_map[sq] |= mark_mask;
-    h_attackable += hdist_table[sq][o_king_sq];
     tbassert(sq < ARR_SIZE && sq >= 0, "sq: %d\n", sq);
 
     switch (ptype_of(p->board[sq])) {
       case EMPTY:  // empty square
+        if(laser_map[sq] != 0) h_attackable += h_dist(sq, o_king_sq);
         break;
       case PAWN:  // Pawn
+        if(laser_map[sq] != 0) h_attackable += h_dist(sq, o_king_sq);
         if (color_of(p->board[sq]) == color) {
           pinned_pawns += 1;
         }
@@ -224,6 +226,7 @@ int mark_laser_path(position_t *p, char *laser_map, color_t c,
         beam = beam_of(bdir);
         break;
       case KING:  // King
+        if(laser_map[sq] != 0) h_attackable += h_dist(sq, o_king_sq);
           return total_pawns - pinned_pawns;
         break;
       case INVALID:  // Ran off edge of board
@@ -329,7 +332,7 @@ float h_dist_old(square_t a, square_t b) {
   return x;
 }
 
-float h_dist(square_t a, square_t b) {
+inline float h_dist(square_t a, square_t b) {
   //int df = fil_of(a) - fil_of(b) + 9;
   //int dr = rnk_of(a) - rnk_of(b) + 9;
   //return hdist_table[df][dr];
@@ -483,7 +486,7 @@ score_t eval(position_t *p, bool verbose) {
    
   int black_pawns_unpinned = mark_laser_path(p, laser_map_white, WHITE, 1);  // 1 = path of laser with no moves
   
-  ev_score_t w_hattackable = HATTACK * h_squares_attackable(p, WHITE);//h_attackable;
+  ev_score_t w_hattackable = HATTACK * (int) h_attackable;
   score[WHITE] += w_hattackable;
   // if (verbose) {
   //   printf("HATTACK bonus %d for White\n", w_hattackable);
@@ -501,7 +504,7 @@ score_t eval(position_t *p, bool verbose) {
 
   int white_pawns_unpinned = mark_laser_path(p, laser_map_black, BLACK, 1);  // 1 = path of laser with no moves
   
-  ev_score_t b_hattackable = HATTACK * h_squares_attackable(p, BLACK);// h_attackable;
+  ev_score_t b_hattackable = HATTACK * (int) h_attackable;
   score[BLACK] += b_hattackable;
   // if (verbose) {
   //   printf("HATTACK bonus %d for Black\n", b_hattackable);
