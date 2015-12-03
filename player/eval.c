@@ -200,10 +200,10 @@ int mark_laser_path(position_t *p, char *laser_map, color_t c,
 
   while (true) {
     sq += beam;
-    if (color_of(p->board[sq]) == color &&
-        ptype_of(p->board[sq]) == PAWN) {
-        pinned_pawns += 1;
-    }
+    //if (color_of(p->board[sq]) == color &&
+    //    ptype_of(p->board[sq]) == PAWN) {
+    //    pinned_pawns += 1;
+    //}
     laser_map[sq] |= mark_mask;
     tbassert(sq < ARR_SIZE && sq >= 0, "sq: %d\n", sq);
 
@@ -211,6 +211,9 @@ int mark_laser_path(position_t *p, char *laser_map, color_t c,
       case EMPTY:  // empty square
         break;
       case PAWN:  // Pawn
+        if (color_of(p->board[sq]) == color) {
+          pinned_pawns += 1;
+        }
         bdir = reflect_of(bdir, ori_of(p->board[sq]));
         if (bdir < 0) {  // Hit back of Pawn
           return total_pawns - pinned_pawns;
