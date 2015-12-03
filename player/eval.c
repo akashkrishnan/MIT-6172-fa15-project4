@@ -200,10 +200,6 @@ int mark_laser_path(position_t *p, char *laser_map, color_t c,
 
   while (true) {
     sq += beam;
-    //if (color_of(p->board[sq]) == color &&
-    //    ptype_of(p->board[sq]) == PAWN) {
-    //    pinned_pawns += 1;
-    //}
     laser_map[sq] |= mark_mask;
     tbassert(sq < ARR_SIZE && sq >= 0, "sq: %d\n", sq);
 
@@ -403,11 +399,8 @@ score_t eval(position_t *p, bool verbose) {
     for (rnk_t r = 0; r < BOARD_WIDTH; r++) {
       square_t sq = square_of(f, r);
       piece_t x = p->board[sq];
-      color_t c = color_of(x);
-      color_t othercolor;
-      square_t otherking;
-      fil_t otherf;
-      rnk_t otherr;
+      color_t c;
+
       if (verbose) {
         square_to_str(sq, buf, MAX_CHARS_IN_MOVE);
       }
@@ -416,6 +409,8 @@ score_t eval(position_t *p, bool verbose) {
         case EMPTY:
           break;
         case PAWN:
+          c = color_of(x);
+
           // MATERIAL heuristic: Bonus for each Pawn
           bonus = PAWN_EV_VALUE;
           // if (verbose) {
@@ -439,6 +434,8 @@ score_t eval(position_t *p, bool verbose) {
           break;
 
         case KING:
+          c = color_of(x);
+
           // KFACE heuristic
           bonus = kface(p, f, r);
           // if (verbose) {
@@ -448,10 +445,10 @@ score_t eval(position_t *p, bool verbose) {
           score[c] += bonus;
 
           // KAGGRESSIVE heuristic
-          othercolor = opp_color(c);
-          otherking = p->kloc[othercolor];
-          otherf = fil_of(otherking);
-          otherr = rnk_of(otherking);
+          color_t othercolor = opp_color(c);
+          square_t otherking = p->kloc[othercolor];
+          fil_t otherf = fil_of(otherking);
+          rnk_t otherr = rnk_of(otherking);
           bonus = kaggressive(f, r, otherf, otherr);
           assert(bonus == kaggressive_old(p, f, r));
 
