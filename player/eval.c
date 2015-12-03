@@ -192,13 +192,14 @@ int mark_laser_path(position_t *p, char *laser_map, color_t c,
   // Fire laser, recording in laser_map
   square_t sq = p->kloc[c];
   int bdir = ori_of(p->board[sq]);
+  int beam = beam_of(bdir);
 
   tbassert(ptype_of(p->board[sq]) == KING,
            "ptype: %d\n", ptype_of(p->board[sq]));
   laser_map[sq] |= mark_mask;
 
   while (true) {
-    sq += beam_of(bdir);
+    sq += beam;
     if (color_of(p->board[sq]) == color &&
         ptype_of(p->board[sq]) == PAWN) {
         pinned_pawns += 1;
@@ -214,6 +215,7 @@ int mark_laser_path(position_t *p, char *laser_map, color_t c,
         if (bdir < 0) {  // Hit back of Pawn
           return total_pawns - pinned_pawns;
         }
+        beam = beam_of(bdir);
         break;
       case KING:  // King
           return total_pawns - pinned_pawns;
@@ -284,7 +286,6 @@ int mark_laser_path(position_t *p, char *laser_map, color_t c,
 
 // MOBILITY heuristic: safe squares around king of color color.
 int mobility(position_t *p, color_t color) {
-
   char* laser_map;
   if (color == WHITE) {
     laser_map = laser_map_black;
