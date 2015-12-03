@@ -1,7 +1,7 @@
 // Copyright (c) 2015 MIT License by 6.172 Staff
 
 #include "./eval.h"
-#include "./hdist_table.c"
+#include "./hdist_table.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -323,29 +323,35 @@ float h_dist_old(square_t a, square_t b) {
 }
 
 float h_dist(square_t a, square_t b) {
-  int df = fil_of(a) - fil_of(b) + 9;
-  int dr = rnk_of(a) - rnk_of(b) + 9;
-  return hdist_table[df][dr];
+  //int df = fil_of(a) - fil_of(b) + 9;
+  //int dr = rnk_of(a) - rnk_of(b) + 9;
+  //return hdist_table[df][dr];
+  return hdist_table[a][b];
 }
 
 void hdist_table_generate() {
   int size = 10;
-  int size2 = (size-1)*2+1;
+  int size2 = 205;
 
   float hdist_table[size2][size2];
+  memset(&hdist_table, 0, sizeof(hdist_table));
+
   for (int af = 0; af < size; af++) {
     for (int ar = 0; ar < size; ar++) {
       for (int bf = 0; bf < size; bf++) {
         for (int br = 0; br < size; br++) {
-          int df = af - bf + size - 1;
-          int dr = ar - br + size - 1;
-          hdist_table[df][dr] = (1.0 / (abs(df - size + 1) + 1)) + (1.0 / (abs(dr - size + 1) + 1));
+          square_t a = square_of(af, ar);
+          square_t b = square_of(bf, br);
+          int df = abs(af - bf);
+          int dr = abs(ar - br);
+          hdist_table[a][b] = (1.0 / (df + 1)) + (1.0 / (dr + 1));
+          printf("%d %d %d %d %.6f\n", a, b, df, dr, hdist_table[a][b]);
         }
       }
     }
   }
 
-  FILE *f = fopen("hdist_table.c", "w");
+  FILE *f = fopen("hdist_table.h", "w");
   fprintf(f, "static float hdist_table[%d][%d] = {\n", size2, size2);
   for (int a = 0; a < size2; a++) {
     fprintf(f, "{");
