@@ -508,7 +508,7 @@ square_t fire(position_t *p) {
 
 
 // return victim pieces or KO
-victims_t make_move(position_t *old, position_t *p, move_t mv) {
+victims_t make_move_old(position_t *old, position_t *p, move_t mv) {
   tbassert(mv != 0, "mv was zero.\n");
 
   WHEN_DEBUG_VERBOSE(char buf[MAX_CHARS_IN_MOVE]);
@@ -592,6 +592,72 @@ victims_t make_move(position_t *old, position_t *p, move_t mv) {
 
   return p->victims;
 }
+
+// return victim pieces or KO
+victims_t make_move(position_t *p, move_t mv) {
+  tbassert(mv != 0, "mv was zero.\n");
+
+  // move phase 1 - moving a piece, which may result in a stomp
+  square_t stomped_sq = low_level_make_move(p, mv);
+
+  // Check for stomping
+  if (stomped_sq) {
+    // Stomped
+    p->victims.stomped = p->board[stomped_sq];
+
+    // Update pawn count
+    if (color_of(p->victims.stomped) == WHITE) {
+      p->white_pawn_count--;
+    } else if (color_of(p->victims.stomped) == BLACK) {
+      p->black_pawn_count--;
+    }
+
+    // Remove stomped piece
+    p->key ^= zob[stomped_sq][p->victims.stomped];
+    p->board[stomped_sq] = 0;
+    p->key ^= zob[stomped_sq][0];
+
+  } else {
+    // Nothing stomped
+
+    p->victims.stomped = 0;
+
+    // Don't check for Ko yet.
+  }
+
+  // move phase 2 - shooting the laser
+  square_t zapped_sq = fire(p);
+
+  // Check for zapping
+  if (zapped_sq) {
+    // Zapped
+    p->victims.zapped = p->board[zapped_sq];
+    
+    // Update pawn count
+    if (color_of(p->victims.zapped) == WHITE) {
+      p->white_pawn_count--;
+    } else if (color_of(p->victims.zapped) == BLACK) {
+      p->black_pawn_count--;
+    }
+
+    // Remove zapped piece
+    p->key ^= zob[zapped_sq][p->victims.zapped];
+    p->board[zapped_sq] = 0;
+    p->key ^= zob[zapped_sq][0];
+
+  } else {
+    // Nothing zapped
+    p->victims.zapped = 0;
+
+    // Ko rule
+    if (USE_KO && zero_victims(p->victims)) {
+      return KO();
+    }
+  }
+
+  return p->victims;
+}
+
 
 // helper function for do_perft
 // ply starting with 0
