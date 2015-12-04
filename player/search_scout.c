@@ -130,11 +130,12 @@ static score_t scout_search(searchNode *node, int depth,
         // process the score. Note that this mutates fields in node.
         simple_acquire(&node_mutex);
         bool cutoff = search_process_score(node, mv, local_index, &result, SEARCH_SCOUT);
-        simple_release(&node_mutex);
         if (cutoff) {
           node->abort = true;
+        simple_release(&node_mutex);
           continue;
         }
+        simple_release(&node_mutex);
     } while (false);
   }
 
