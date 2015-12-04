@@ -63,14 +63,10 @@ void tt_resize_hashtable(int size_in_meg) {
   // total number of sets we could have in the hashtable
   uint64_t num_of_sets = size_in_bytes / sizeof(ttSet_t);
 
+  uint64_t pow = 1;
   num_of_sets--;
-  num_of_sets |= num_of_sets >> 1;
-  num_of_sets |= num_of_sets >> 2;
-  num_of_sets |= num_of_sets >> 4;
-  num_of_sets |= num_of_sets >> 8;
-  num_of_sets |= num_of_sets >> 16;
-  num_of_sets |= num_of_sets >> 32;
-  num_of_sets++;
+  while (pow <= num_of_sets) pow *= 2;
+  num_of_sets = pow;
 
   hashtable.num_of_sets = num_of_sets;
   hashtable.mask = num_of_sets - 1;
