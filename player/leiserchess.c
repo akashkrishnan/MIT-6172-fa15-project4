@@ -429,9 +429,6 @@ int main(int argc, char *argv[]) {
   bool saw_input = false;
   double start_time = milliseconds();
 
-  // init the laser map
-  laser_map_init();
-
   while (true) {
     int n;
 
