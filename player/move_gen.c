@@ -349,7 +349,7 @@ square_t low_level_make_move_old(position_t *old, position_t *p, move_t mv) {
  * p              - the current position to be updated
  * mv             - the move to make in the current position
  */
-square_t low_level_make_move(position_t *p, move_t mv) {
+square_t low_level_make_move(position_t *p, position_t *placeholder, move_t mv) {
   tbassert(mv != 0, "mv was zero.\n");
 
   square_t stomped_dst_sq = 0;
@@ -389,10 +389,10 @@ square_t low_level_make_move(position_t *p, move_t mv) {
 
     // Update King locations if necessary
     if (ptype_of(from_piece) == KING) {
-      old->kloc[color_of(from_piece)] = to_sq;
+      p->kloc[color_of(from_piece)] = to_sq;
     }
     if (ptype_of(to_piece) == KING) {
-      old->kloc[color_of(to_piece)] = from_sq;
+      p->kloc[color_of(to_piece)] = from_sq;
     }
 
   } else {
@@ -406,7 +406,7 @@ square_t low_level_make_move(position_t *p, move_t mv) {
   }
 
   // Increment ply
-  old->ply++;
+  p->ply++;
 
   return stomped_dst_sq;
 }
@@ -594,18 +594,21 @@ victims_t make_move_old(position_t *old, position_t *p, move_t mv) {
 }
 
 // return victim pieces or KO
-victims_t make_move(position_t *p, position_t *unused, move_t mv) {
+victims_t make_move(position_t *p, position_t *placeholder, move_t mv) {
   tbassert(mv != 0, "mv was zero.\n");
 
-  victims_t victims = { .stomped = 0, .zapped = 0 };
+  victims_t victims = {
+    .stomped = 0, .stomped_sq = 0,
+    .zapped  = 0, .zapped_sq  = 0,
+  };
 
   // STEP 1: translating or rotating with stomping
-  square_t stomped_sq = low_level_make_move(p, mv);
+  victims.stomped_sq = low_level_make_move(p, placeholder, mv);
 
   // Check for stomping
-  if (stomped_sq) {
+  if (victims.stomped_sq) {
     // Stomped
-    victims.stomped = p->board[stomped_sq];
+    victims.stomped = p->board[victims.stomped_sq];
 
     // Decrement pawn count
     if (color_of(victims.stomped) == WHITE) {
@@ -615,19 +618,19 @@ victims_t make_move(position_t *p, position_t *unused, move_t mv) {
     }
 
     // Remove stomped piece
-    p->key ^= zob[stomped_sq][victims.stomped];  // Clear sq in hash
-    p->board[stomped_sq] = 0;                    // Remove piece from board
-    p->key ^= zob[stomped_sq][0];                // Set sq in hash
+    p->key ^= zob[victims.stomped_sq][victims.stomped];  // Clear sq in hash
+    p->board[victims.stomped_sq] = 0;                    // Remove piece from board
+    p->key ^= zob[victims.stomped_sq][0];                // Set sq in hash
 
   }
 
   // STEP 2: firing laser with zapping
-  square_t zapped_sq = fire(p);
+  victims.zapped_sq = fire(p);
 
   // Check for zapping
-  if (zapped_sq) {
+  if (victims.zapped_sq) {
     // Zapped
-    victims.zapped = p->board[zapped_sq];
+    victims.zapped = p->board[victims.zapped_sq];
     
     // Decrement pawn count
     if (color_of(victims.zapped) == WHITE) {
@@ -637,9 +640,9 @@ victims_t make_move(position_t *p, position_t *unused, move_t mv) {
     }
 
     // Remove zapped piece
-    p->key ^= zob[zapped_sq][victims.zapped];  // Clear sq in hash
-    p->board[zapped_sq] = 0;                   // Remove piece from board
-    p->key ^= zob[zapped_sq][0];               // Set sq in hash
+    p->key ^= zob[victims.zapped_sq][victims.zapped];  // Clear sq in hash
+    p->board[victims.zapped_sq] = 0;                   // Remove piece from board
+    p->key ^= zob[victims.zapped_sq][0];               // Set sq in hash
 
   } else if (USE_KO && !victims.stomped) {
     // No victims; return KO
@@ -663,6 +666,9 @@ void undo_move(position_t *p, victims_t victims, move_t mv) {
     if (victims.zapped) {
       // Zapped
 
+      // Get square
+      square_t zapped_sq = victims.zapped_sq;
+
       // Increment pawn count
       if (color_of(victims.zapped) == WHITE) {
         p->white_pawn_count++;
@@ -679,6 +685,9 @@ void undo_move(position_t *p, victims_t victims, move_t mv) {
     // Check for stomping
     if (victims.stomped) {
       // Stomped
+
+      // Get square
+      square_t stomped_sq = victims.stomped_sq;
 
       // Increment pawn count
       if (color_of(victims.stomped) == WHITE) {

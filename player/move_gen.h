@@ -117,6 +117,8 @@ typedef enum {
 typedef struct victims_t {
   piece_t stomped;
   piece_t zapped;
+  square_t stomped_sq;
+  square_t zapped_sq;
 } victims_t;
 
 // returned by make move in illegal situation
