@@ -658,6 +658,37 @@ victims_t make_move(position_t *p, move_t mv) {
   return p->victims;
 }
 
+void undo_move(position_t *p, victims_t victims, move_t mv) {
+  tbassert(mv != 0, "mv was zero.\n");
+
+  // TODO: Check for KO
+  // TODO: Check for zapping
+  if (victims.zapped) {
+    // Zapped
+  }
+
+  // Check for stomping
+  if (victims.stomped) {
+    // Stomped
+
+    // Update pawn count
+    if (color_of(p->victims.stomped) == WHITE) {
+      p->white_pawn_count++;
+    } else if (color_of(p->victims.stomped) == BLACK) {
+      p->black_pawn_count++;
+    }
+
+    // Add stomped piece
+    p->key ^= zob[stomped_sq][p->board[stomped_sq]];
+    p->board[stomped_sq] = p->victims.stomped;
+    p->key ^= zob[stomped_sq][p->victims.stomped];
+  }
+
+  // Undo phase 1
+  low_level_undo_move(p, mv);
+
+}
+
 
 // helper function for do_perft
 // ply starting with 0
