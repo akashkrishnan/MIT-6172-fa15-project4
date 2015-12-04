@@ -506,15 +506,20 @@ square_t fire(position_t *p) {
   }
 }
 
+victims_t make_move_new(position_t *p, position_t *placeholder, move_t mv);
+void undo_move(position_t *p, victims_t victims, move_t mv);
 
 // return victim pieces or KO
-victims_t make_move_old(position_t *old, position_t *p, move_t mv) {
+victims_t make_move(position_t *old, position_t *p, move_t mv) {
   tbassert(mv != 0, "mv was zero.\n");
 
   WHEN_DEBUG_VERBOSE(char buf[MAX_CHARS_IN_MOVE]);
 
+  victims_t victims = make_move_new(old, p, mv);
+  undo_move(old, victims, mv);
+
   // move phase 1 - moving a piece, which may result in a stomp
-  square_t stomped_sq = low_level_make_move(old, p, mv);
+  square_t stomped_sq = low_level_make_move_old(old, p, mv);
 
   WHEN_DEBUG_VERBOSE({
       if (stomped_sq != 0) {
@@ -594,7 +599,7 @@ victims_t make_move_old(position_t *old, position_t *p, move_t mv) {
 }
 
 // return victim pieces or KO
-victims_t make_move(position_t *p, position_t *placeholder, move_t mv) {
+victims_t make_move_new(position_t *p, position_t *placeholder, move_t mv) {
   tbassert(mv != 0, "mv was zero.\n");
 
   victims_t victims = {
