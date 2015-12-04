@@ -344,41 +344,48 @@ square_t low_level_make_move_old(position_t *old, position_t *p, move_t mv) {
   return stomped_dst_sq;
 }
 
-square_t low_level_make_move(position_t *old, position_t *p, move_t mv) {
+/*
+ * POSTCONDITION: stomped piece must be removed from hash and board according to returned value stomped_dst_sq
+ * p              - the current position to be updated
+ * mv             - the move to make in the current position
+ */
+square_t low_level_make_move(position_t *p, move_t mv) {
   tbassert(mv != 0, "mv was zero.\n");
 
   square_t stomped_dst_sq = 0;
 
+  // Decompose move data
   square_t from_sq = from_square(mv);
-  square_t to_sq = to_square(mv);
-  rot_t rot = rot_of(mv);
+  square_t to_sq   = to_square(mv);
+  rot_t    rot     = rot_of(mv);
 
-  old->key ^= zob_color;  // swap color to move
+  // Swap turns
+  p->key ^= zob_color;
 
+  // Get pieces
   piece_t from_piece = p->board[from_sq];
-  piece_t to_piece = p->board[to_sq];
+  piece_t to_piece   = p->board[to_sq];
 
+  // Determine if move was a translation or a rotation
   if (to_sq != from_sq) {
-    // move, not rotation
+    // Move was a translation
 
+    // Check if we're stomping a piece
     if (PAWN == ptype_of(from_piece) &&
         PAWN == ptype_of(to_piece) &&
         color_of(to_piece) == opp_color(color_of(from_piece))) {
-      // We're stomping a piece.  Return the destination of the
-      // stomped piece.  Let the caller remove the piece from the
-      // board.
       stomped_dst_sq = from_sq;
     }
 
-    // Hash key updates
-    old->key ^= zob[from_sq][from_piece];  // remove from_piece from from_sq
-    old->key ^= zob[to_sq][to_piece];      // remove to_piece from to_sq
+    // Swap from_piece and to_piece in hash
+    p->key ^= zob[from_sq][from_piece];  // Remove from_piece from from_sq
+    p->key ^= zob[to_sq][to_piece];      // Remove to_piece from to_sq
+    p->key ^= zob[to_sq][from_piece];    // Add from_piece in to_sq
+    p->key ^= zob[from_sq][to_piece];    // Add to_piece in from_sq
 
-    old->board[to_sq] = from_piece;  // swap from_piece and to_piece on board
-    old->board[from_sq] = to_piece;
-
-    old->key ^= zob[to_sq][from_piece];  // place from_piece in to_sq
-    old->key ^= zob[from_sq][to_piece];  // place to_piece in from_sq
+    // Swap from_piece and to_piece on board
+    p->board[to_sq]   = from_piece;
+    p->board[from_sq] = to_piece;
 
     // Update King locations if necessary
     if (ptype_of(from_piece) == KING) {
@@ -388,11 +395,14 @@ square_t low_level_make_move(position_t *old, position_t *p, move_t mv) {
       old->kloc[color_of(to_piece)] = from_sq;
     }
 
-  } else {  // rotation
-    old->key ^= zob[from_sq][from_piece];            // remove from_piece from from_sq in hash
-    set_ori(&from_piece, rot + ori_of(from_piece));  // rotate from_piece
-    old->board[from_sq] = from_piece;                // place rotated piece on board
-    old->key ^= zob[from_sq][from_piece];            // ... and in hash
+  } else {
+    // Move was a rotation
+
+    p->key ^= zob[from_sq][from_piece];              // Remove from_piece from from_sq in hash
+    set_ori(&from_piece, ori_of(from_piece) + rot);  // Rotate from_piece
+    p->board[from_sq] = from_piece;                  // Place piece on board
+    p->key ^= zob[from_sq][from_piece];              // Add from_piece to from_sq in hash
+
   }
 
   // Increment ply
