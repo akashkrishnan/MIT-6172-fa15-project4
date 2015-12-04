@@ -36,8 +36,7 @@ typedef int8_t fil_t;
 
 #define PIECE_SIZE 5  // Number of bits in (ptype, color, orientation)
 
-typedef int16_t piece_t; //high-order 8 bits are position, low-order 8 bits are ptype, color, orientation
-
+typedef int8_t piece_t;
 // -----------------------------------------------------------------------------
 // piece types
 // -----------------------------------------------------------------------------
