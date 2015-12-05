@@ -326,5 +326,5 @@ static inline bool zero_victims(victims_t victims) {
 bool victim_exists(victims_t victims);
 
 int mark_laser_path(position_t *p, char *laser_map, color_t c,
-                     char mark_mask, float *h_attackable);
+                     char mark_mask);
 #endif  // MOVE_GEN_H
