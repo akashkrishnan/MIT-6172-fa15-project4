@@ -92,17 +92,19 @@ static score_t scout_search(searchNode *node, int depth,
   simple_mutex_t node_mutex;
   init_simple_mutex(&node_mutex);
 
+  int multipl = 6;
+  
   // Sort the move list.
+  
+  for(int mv_index = 0; mv_index < num_of_moves%multipl; mv_index++) {
+    sort_incremental(move_list, num_of_moves, mv_index);
     do {
-        
-        sort_incremental(move_list, num_of_moves, 0);
-        
         moveEvaluationResult result;
         if (node->abort) continue;
-        
+
         // Get the next move from the move list.
         int local_index = __sync_fetch_and_add(&number_of_moves_evaluated,1);
-        
+
         move_t mv = get_move(move_list[local_index]);
 
         if (TRACE_MOVES) {
@@ -134,52 +136,53 @@ static score_t scout_search(searchNode *node, int depth,
           continue;
         }
     } while (false);
+  }
   
     if (node->abort != true) {
         sort_incremental_full(move_list, num_of_moves, 1);
+        cilk_for(int mv_index_set = 0; mv_index_set < (num_of_moves-num_of_moves%multipl)/multipl; mv_index_set++) {
+            for(int mv_index_offset = 0; mv_index_offset < multipl; mv_index_offset++) {
+//                int mv_index = mv_index_set*multipl + mv_index_offset;
+                moveEvaluationResult result;
+                if (node->abort) break;
 
-        cilk_for(int mv_index = 1; mv_index < num_of_moves; mv_index++) {
-          do {
-              moveEvaluationResult result;
-              if (node->abort) continue;
+                // Get the next move from the move list.
+                int local_index = __sync_fetch_and_add(&number_of_moves_evaluated,1);
 
-              // Get the next move from the move list.
-              int local_index = __sync_fetch_and_add(&number_of_moves_evaluated,1);
+                move_t mv = get_move(move_list[local_index]);
 
-              move_t mv = get_move(move_list[local_index]);
+                if (TRACE_MOVES) {
+                  print_move_info(mv, node->ply);
+                }
 
-              if (TRACE_MOVES) {
-                print_move_info(mv, node->ply);
-              }
+                // increase node count
+                __sync_fetch_and_add(node_count_serial, 1);
 
-              // increase node count
-              __sync_fetch_and_add(node_count_serial, 1);
+                evaluateMove(&result, node, mv, killer_a, killer_b,
+                                                           SEARCH_SCOUT,
+                                                           node_count_serial);
 
-              evaluateMove(&result, node, mv, killer_a, killer_b,
-                                                         SEARCH_SCOUT,
-                                                         node_count_serial);
+                if (node->abort || result.type == MOVE_ILLEGAL || result.type == MOVE_IGNORE
+                    || abortf || parallel_parent_aborted(node)) {
+                  continue;
+                }
 
-              if (result.type == MOVE_ILLEGAL || result.type == MOVE_IGNORE
-                  || abortf || parallel_parent_aborted(node)) {
-                continue;
-              }
+                // A legal move is a move that's not KO, but when we are in quiescence
+                // we only want to count moves that has a capture.
+                if (result.type == MOVE_EVALUATED) {
+                  node->legal_move_count++;
+                }
 
-              // A legal move is a move that's not KO, but when we are in quiescence
-              // we only want to count moves that has a capture.
-              if (result.type == MOVE_EVALUATED) {
-                node->legal_move_count++;
-              }
-
-              // process the score. Note that this mutates fields in node.
-              simple_acquire(&node_mutex);
-              bool cutoff = search_process_score(node, mv, local_index, &result, SEARCH_SCOUT);
-              if (cutoff) {
-                node->abort = true;
+                // process the score. Note that this mutates fields in node.
+                simple_acquire(&node_mutex);
+                bool cutoff = search_process_score(node, mv, local_index, &result, SEARCH_SCOUT);
+                if (cutoff) {
+                  node->abort = true;
+                  simple_release(&node_mutex);
+                  break;
+                }
                 simple_release(&node_mutex);
-                continue;
-              }
-              simple_release(&node_mutex);
-          } while (false);
+            }
         }
     }
   

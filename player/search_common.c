@@ -381,7 +381,7 @@ void sort_incremental(sortable_move_t *move_list, int num_of_moves, int mv_index
 }
 
 void sort_incremental_full(sortable_move_t *move_list, int num_of_moves, int mv_index) {
-  for (int j = mv_index; j < num_of_moves; j++) {
+  for (int j = 0; j < num_of_moves; j++) {
     sortable_move_t insert = move_list[j];
     int hole = j;
     while (hole > 0 && insert > move_list[hole-1]) {
