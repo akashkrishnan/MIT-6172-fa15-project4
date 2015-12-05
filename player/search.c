@@ -85,7 +85,7 @@ static void initialize_pv_node(searchNode* node, int depth) {
   node->depth = depth;
   node->legal_move_count = 0;
   node->ply = node->parent->ply + 1;
-  node->fake_color_to_move = color_to_move_of(&(node->position));
+  node->fake_color_to_move = color_to_move_of(node->position);
   // point of view = 1 for white, -1 for black
   node->pov = 1 - node->fake_color_to_move * 2;
   node->quiescence = (depth <= 0);
@@ -180,7 +180,7 @@ static score_t searchPV(searchNode *node, int depth, uint64_t *node_count_serial
   }
 
   if (node->quiescence == false) {
-    update_best_move_history(&(node->position), node->best_move_index,
+    update_best_move_history(node->position, node->best_move_index,
                              move_list, num_moves_tried);
   }
 
@@ -209,8 +209,8 @@ static void initialize_root_node(searchNode *node, score_t alpha, score_t beta, 
   node->beta = beta;
   node->depth = depth;
   node->ply = ply;
-  node->position = *p;
-  node->fake_color_to_move = color_to_move_of(&(node->position));
+  node->position = p;
+  node->fake_color_to_move = color_to_move_of(node->position);
   node->best_score = -INF;
   node->pov = 1 - node->fake_color_to_move * 2;  // pov = 1 for White, -1 for Black
   node->abort = false;
@@ -257,10 +257,13 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
 
     (*node_count_serial)++;
 
+    next_node.position = rootNode.position;
+
     // make the move.
-    victims_t x = make_move(&(rootNode.position), &(next_node.position), mv);
+    victims_t x = apply_move(rootNode.position, mv);
 
     if (is_KO(x)) {
+      undo_move(rootNode.position, x, mv);
       continue;  // not a legal move
     }
 
@@ -270,11 +273,12 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
       goto scored;
     }
 
-    if (is_repeated(&(next_node.position), rootNode.ply)) {
-      score = get_draw_score(&(next_node.position), rootNode.ply);
+    // TODO: figure out how to deal with is_repeated
+    /*if (is_repeated(next_node.position, rootNode.ply)) {
+      score = get_draw_score(next_node.position, rootNode.ply);
       next_node.subpv[0] = 0;
       goto scored;
-    }
+    }*/
 
     if (mv_index == 0 || rootNode.depth == 1) {
       // We guess that the first move is the principle variation
@@ -282,6 +286,7 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
 
       // Check if we should abort due to time control.
       if (abortf) {
+        undo_move(rootNode.position, x, mv);
         return 0;
       }
     } else {
@@ -289,14 +294,17 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
 
       // Check if we should abort due to time control.
       if (abortf) {
+        undo_move(rootNode.position, x, mv);
         return 0;
       }
 
       // If its score exceeds the current best score,
       if (score > rootNode.alpha) {
         score = -searchPV(&next_node, rootNode.depth-1, node_count_serial);
+
         // Check if we should abort due to time control.
         if (abortf) {
+          undo_move(rootNode.position, x, mv);
           return 0;
         }
       }
@@ -306,6 +314,8 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
     // only valid for the root node:
     tbassert((score > rootNode.best_score) == (score > rootNode.alpha),
              "score = %d, best = %d, alpha = %d\n", score, rootNode.best_score, rootNode.alpha);
+
+    undo_move(rootNode.position, x, mv);
 
     if (score > rootNode.best_score) {
       tbassert(score > rootNode.alpha, "score: %d, alpha: %d\n", score, rootNode.alpha);
@@ -346,6 +356,7 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
       tbassert(0, "score: %d, beta: %d\n", score, rootNode.beta);
       break;
     }
+
   }
 
   return rootNode.best_score;

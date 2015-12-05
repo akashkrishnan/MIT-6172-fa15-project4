@@ -58,7 +58,8 @@ typedef struct searchNode {
   bool abort;
   score_t best_score;
   int best_move_index;
-  position_t position;
+  position_t* position;
+  uint64_t key;
   move_t subpv[MAX_PLY_IN_SEARCH];
 } searchNode;
 

@@ -193,7 +193,7 @@ leafEvalResult evaluate_as_leaf(searchNode *node, searchType_t type) {
   result.hash_table_move = 0;
 
   // get transposition table record if available.
-  ttRec_t *rec = tt_hashtable_get(node->position.key);
+  ttRec_t *rec = tt_hashtable_get(node->position->key);
   if (rec) {
     if (type == SEARCH_SCOUT && tt_is_usable(rec, node->depth, node->beta)) {
       result.type = MOVE_EVALUATED;
@@ -204,7 +204,7 @@ leafEvalResult evaluate_as_leaf(searchNode *node, searchType_t type) {
   }
 
   // stand pat (having-the-move) bonus
-  score_t sps = eval(&(node->position), false) + HMB;
+  score_t sps = eval(node->position, false) + HMB;
   bool quiescence = (node->depth <= 0);  // are we in quiescence?
   result.should_enter_quiescence = quiescence;
   if (quiescence) {
@@ -252,7 +252,7 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
   result->next_node.parent = node;
 
   // Make the move, and get any victim pieces.
-  victims_t victims = make_move(&(node->position), &(result->next_node.position),
+  victims_t victims = make_move(node->position, result->next_node.position,
                                 mv);
 
   // Check whether this move changes the board state.
@@ -276,12 +276,13 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
     return;
   }
 
+  // TODO: NEED TO UNCOMMENT THIS
   // Check whether the board state has been repeated, this results in a draw.
-  if (is_repeated(&(result->next_node.position), node->ply)) {
+  /*if (is_repeated(result->next_node->position, node->ply)) {
     result->type = MOVE_GAMEOVER;
-    result->score = get_draw_score(&(result->next_node.position), node->ply);
+    result->score = get_draw_score(result->next_node->position, node->ply);
     return;
-  }
+  }*/
 
   tbassert(victims.stomped == 0
            || color_of(victims.stomped) != node->fake_color_to_move,
@@ -436,9 +437,9 @@ bool should_abort_check() {
 static int get_sortable_move_list(searchNode *node, sortable_move_t * move_list,
                          int hash_table_move) {
   // number of moves in list
-  int num_of_moves = generate_all(&(node->position), move_list, false);
+  int num_of_moves = generate_all(node->position, move_list, false);
 
-  color_t fake_color_to_move = color_to_move_of(&(node->position));
+  color_t fake_color_to_move = color_to_move_of(node->position);
 
   move_t killer_a = killer[KMT(node->ply, 0)];
   move_t killer_b = killer[KMT(node->ply, 1)];
@@ -456,7 +457,7 @@ static int get_sortable_move_list(searchNode *node, sortable_move_t * move_list,
       ptype_t  pce = ptype_mv_of(mv);
       rot_t    ro  = rot_of(mv);   // rotation
       square_t fs  = from_square(mv);
-      int      ot  = ORI_MASK & (ori_of(node->position.board[fs]) + ro);
+      int      ot  = ORI_MASK & (ori_of(node->position->board[fs]) + ro);
       square_t ts  = to_square(mv);
       set_sort_key(&move_list[mv_index],
                    best_move_history[BMH(fake_color_to_move, pce, ts, ot)]);

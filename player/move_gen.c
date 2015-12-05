@@ -216,7 +216,7 @@ int generate_all(position_t *p, sortable_move_t *sortable_move_list,
   return move_count;
 }
 
-square_t low_level_make_move_old(position_t *old, position_t *p, move_t mv) {
+square_t low_level_make_move(position_t *old, position_t *p, move_t mv) {
   tbassert(mv != 0, "mv was zero.\n");
 
   square_t stomped_dst_sq = 0;
@@ -349,7 +349,7 @@ square_t low_level_make_move_old(position_t *old, position_t *p, move_t mv) {
  * p              - the current position to be updated
  * mv             - the move to make in the current position
  */
-square_t low_level_make_move(position_t *p, position_t *placeholder, move_t mv) {
+square_t low_level_apply_move(position_t *p, move_t mv) {
   tbassert(mv != 0, "mv was zero.\n");
 
   square_t stomped_dst_sq = 0;
@@ -506,8 +506,9 @@ square_t fire(position_t *p) {
   }
 }
 
-victims_t make_move_new(position_t *p, position_t *placeholder, move_t mv);
-void undo_move(position_t *p, victims_t victims, move_t mv);
+// Uncomment the following lines to test if undo_move properly undo's make_move
+// victims_t apply_move(position_t *p, move_t mv);
+// void undo_move(position_t *p, victims_t victims, move_t mv);
 
 // return victim pieces or KO
 victims_t make_move(position_t *old, position_t *p, move_t mv) {
@@ -515,11 +516,12 @@ victims_t make_move(position_t *old, position_t *p, move_t mv) {
 
   WHEN_DEBUG_VERBOSE(char buf[MAX_CHARS_IN_MOVE]);
 
-  victims_t victims = make_move_new(old, p, mv);
-  undo_move(old, victims, mv);
+  // Uncomment the following lines to test if undo_move properly undo's make_move
+  // victims_t victims = apply_move(old, mv);
+  // undo_move(old, victims, mv);
 
   // move phase 1 - moving a piece, which may result in a stomp
-  square_t stomped_sq = low_level_make_move_old(old, p, mv);
+  square_t stomped_sq = low_level_make_move(old, p, mv);
 
   WHEN_DEBUG_VERBOSE({
       if (stomped_sq != 0) {
@@ -599,7 +601,7 @@ victims_t make_move(position_t *old, position_t *p, move_t mv) {
 }
 
 // return victim pieces or KO
-victims_t make_move_new(position_t *p, position_t *placeholder, move_t mv) {
+victims_t apply_move(position_t *p, move_t mv) {
   tbassert(mv != 0, "mv was zero.\n");
 
   victims_t victims = {
@@ -607,8 +609,10 @@ victims_t make_move_new(position_t *p, position_t *placeholder, move_t mv) {
     .zapped  = 0, .zapped_sq  = 0,
   };
 
+  uint64_t old_key = p->key;
+
   // STEP 1: translating or rotating with stomping
-  victims.stomped_sq = low_level_make_move(p, placeholder, mv);
+  victims.stomped_sq = low_level_apply_move(p, mv);
 
   // Check for stomping
   if (victims.stomped_sq) {
@@ -649,8 +653,10 @@ victims_t make_move_new(position_t *p, position_t *placeholder, move_t mv) {
     p->board[victims.zapped_sq] = 0;                   // Remove piece from board
     p->key ^= zob[victims.zapped_sq][0];               // Set sq in hash
 
-  } else if (USE_KO && !victims.stomped) {
-    // No victims; return KO
+  } else if (USE_KO &&
+             !victims.stomped &&
+             (p->key == (old_key ^ zob_color))) {
+    // No victims & board didn't change; return KO
     return KO();
   }
 
@@ -664,7 +670,8 @@ void undo_move(position_t *p, victims_t victims, move_t mv) {
 
   // Check for KO
   if (is_KO(victims)) {
-    // KO
+    // KO --- nothing actually changed
+    return;
   } else {
 
     // Check for zapping
@@ -739,7 +746,7 @@ static uint64_t perft_search(position_t *p, int depth, int ply) {
 
     square_t stomped_sq = low_level_make_move(p, &np, mv);  // make the move baby!
 
-    if (stomped_sq != 0) {
+    if (stomped_sq) {
       tbassert(ptype_of(np.board[stomped_sq]) == PAWN,
                "ptype_of(np.board[stomped_sq]): %d\n",
                ptype_of(np.board[stomped_sq]));
