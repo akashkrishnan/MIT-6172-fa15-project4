@@ -7,7 +7,6 @@
 
 #include "./tbassert.h"
 #include "./simple_mutex.h"
-#include <cilk/cilk.h>
 
 // Checks whether a node's parent has aborted.
 //   If this occurs, we should just stop and return 0 immediately.
@@ -92,52 +91,10 @@ static score_t scout_search(searchNode *node, int depth,
   init_simple_mutex(&node_mutex);
 
   // Sort the move list.
+  sort_incremental(move_list, num_of_moves, 0);
   
   moveEvaluationResult result;
-  sort_incremental_full(move_list, num_of_moves, 0);
 
-  cilk_for(int mv_index = 0; mv_index < num_of_moves; mv_index++) {
-    do {
-        if (node->abort) continue;
-        
-        // Get the next move from the move list.
-        int local_index = __sync_fetch_and_add(&number_of_moves_evaluated,1);
-        
-        move_t mv = get_move(move_list[local_index]);
-
-        if (TRACE_MOVES) {
-          print_move_info(mv, node->ply);
-        }
-
-        // increase node count
-        __sync_fetch_and_add(node_count_serial, 1);
-
-        evaluateMove(&result, node, mv, killer_a, killer_b,
-                                                   SEARCH_SCOUT,
-                                                   node_count_serial);
-
-        if (result.type == MOVE_ILLEGAL || result.type == MOVE_IGNORE
-            || abortf || parallel_parent_aborted(node)) {
-          continue;
-        }
-
-        // A legal move is a move that's not KO, but when we are in quiescence
-        // we only want to count moves that has a capture.
-        if (result.type == MOVE_EVALUATED) {
-          node->legal_move_count++;
-        }
-
-        // process the score. Note that this mutates fields in node.
-        simple_acquire(&node_mutex);
-        bool cutoff = search_process_score(node, mv, local_index, &result, SEARCH_SCOUT);
-        if (cutoff) {
-          node->abort = true;
-        simple_release(&node_mutex);
-          continue;
-        }
-        simple_release(&node_mutex);
-    } while (false);
-=======
   for (int mv_index = 0; mv_index < num_of_moves; mv_index++) {
     if (mv_index == 1) {
       sort_incremental_full(move_list, num_of_moves, number_of_moves_evaluated);
@@ -175,7 +132,6 @@ static score_t scout_search(searchNode *node, int depth,
       node->abort = true;
       break;
     }
->>>>>>> 2a0078ff3a5f5d6b841294b96f8bdba8f776d081
   }
 
   if (parallel_parent_aborted(node)) {
