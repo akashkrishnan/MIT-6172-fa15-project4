@@ -98,48 +98,45 @@ static score_t scout_search(searchNode *node, int depth,
   
   for(int mv_index = 0; mv_index < num_of_moves%multipl; mv_index++) {
     sort_incremental(move_list, num_of_moves, mv_index);
-    do {
-        moveEvaluationResult result;
-        if (node->abort) continue;
+    moveEvaluationResult result;
 
-        // Get the next move from the move list.
-        int local_index = __sync_fetch_and_add(&number_of_moves_evaluated,1);
+    // Get the next move from the move list.
+    int local_index = __sync_fetch_and_add(&number_of_moves_evaluated,1);
 
-        move_t mv = get_move(move_list[local_index]);
+    move_t mv = get_move(move_list[local_index]);
 
-        if (TRACE_MOVES) {
-          print_move_info(mv, node->ply);
-        }
+    if (TRACE_MOVES) {
+      print_move_info(mv, node->ply);
+    }
 
-        // increase node count
-        __sync_fetch_and_add(node_count_serial, 1);
+    // increase node count
+    __sync_fetch_and_add(node_count_serial, 1);
 
-        evaluateMove(&result, node, mv, killer_a, killer_b,
-                                                   SEARCH_SCOUT,
-                                                   node_count_serial);
+    evaluateMove(&result, node, mv, killer_a, killer_b,
+                                               SEARCH_SCOUT,
+                                               node_count_serial);
 
-        if (result.type == MOVE_ILLEGAL || result.type == MOVE_IGNORE
-            || abortf || parallel_parent_aborted(node)) {
-          continue;
-        }
+    if (result.type == MOVE_ILLEGAL || result.type == MOVE_IGNORE
+        || abortf || parallel_parent_aborted(node)) {
+      continue;
+    }
 
-        // A legal move is a move that's not KO, but when we are in quiescence
-        // we only want to count moves that has a capture.
-        if (result.type == MOVE_EVALUATED) {
-          node->legal_move_count++;
-        }
+    // A legal move is a move that's not KO, but when we are in quiescence
+    // we only want to count moves that has a capture.
+    if (result.type == MOVE_EVALUATED) {
+      node->legal_move_count++;
+    }
 
-        // process the score. Note that this mutates fields in node.
-        bool cutoff = search_process_score(node, mv, local_index, &result, SEARCH_SCOUT);
-        if (cutoff) {
-          node->abort = true;
-          continue;
-        }
-    } while (false);
+    // process the score. Note that this mutates fields in node.
+    bool cutoff = search_process_score(node, mv, local_index, &result, SEARCH_SCOUT);
+    if (cutoff) {
+      node->abort = true;
+      break;
+    }
   }
   
     if (node->abort != true) {
-        sort_incremental_full(move_list, num_of_moves, 1);
+        sort_incremental_full(move_list, num_of_moves, 0);
         cilk_for(int mv_index_set = 0; mv_index_set < (num_of_moves-num_of_moves%multipl)/multipl; mv_index_set++) {
             for(int mv_index_offset = 0; mv_index_offset < multipl; mv_index_offset++) {
 //                int mv_index = mv_index_set*multipl + mv_index_offset;
