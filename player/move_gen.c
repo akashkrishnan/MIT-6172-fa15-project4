@@ -526,6 +526,8 @@ victims_t make_move(position_t *old, position_t *p, move_t mv) {
 
   WHEN_DEBUG_VERBOSE(char buf[MAX_CHARS_IN_MOVE]);
 
+  p = malloc(sizeof (position_t));
+
   // Uncomment the following lines to test if undo_move properly undo's make_move
   // victims_t victims = apply_move(old, mv);
   // undo_move(old, victims, mv);
