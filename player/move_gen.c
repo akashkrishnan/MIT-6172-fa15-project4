@@ -680,7 +680,8 @@ void undo_move(position_t *p, victims_t victims, move_t mv) {
   // Check for KO
   if (is_KO(victims)) {
     // KO --- nothing actually changed
-    return;
+    // TODO: flip color and return
+    //return;
   } else {
 
     // Check for zapping
@@ -698,9 +699,9 @@ void undo_move(position_t *p, victims_t victims, move_t mv) {
       }
 
       // Add zapped piece back
-      p->key ^= zob[zapped_sq][p->board[zapped_sq]]; // Clear sq in hash
-      p->board[zapped_sq] = victims.zapped; // Add piece to sq on board
-      p->key ^= zob[zapped_sq][victims.zapped]; // Add piece to sq in hash
+      p->key ^= zob[zapped_sq][p->board[zapped_sq]];  // Clear sq in hash
+      p->board[zapped_sq] = victims.zapped;           // Add piece to sq on board
+      p->key ^= zob[zapped_sq][victims.zapped];       // Add piece to sq in hash
     }
 
     // Check for stomping
@@ -718,9 +719,9 @@ void undo_move(position_t *p, victims_t victims, move_t mv) {
       }
 
       // Add stomped piece back
-      p->key ^= zob[stomped_sq][p->board[stomped_sq]]; // Clear sq in hash
-      p->board[stomped_sq] = victims.stomped; // Add piece to sq on board
-      p->key ^= zob[stomped_sq][victims.stomped]; // Add piece to sq in hash
+      p->key ^= zob[stomped_sq][p->board[stomped_sq]];  // Clear sq in hash
+      p->board[stomped_sq] = victims.stomped;           // Add piece to sq on board
+      p->key ^= zob[stomped_sq][victims.stomped];       // Add piece to sq in hash
     }
 
   }
