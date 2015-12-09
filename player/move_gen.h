@@ -116,8 +116,6 @@ typedef enum {
 typedef struct victims_t {
   piece_t stomped;
   piece_t zapped;
-  square_t stomped_sq;
-  square_t zapped_sq;
 } victims_t;
 
 // returned by make move in illegal situation
@@ -309,10 +307,7 @@ int generate_all(position_t *p, sortable_move_t *sortable_move_list,
                  bool strict);
 void do_perft(position_t *gme, int depth, int ply);
 square_t low_level_make_move(position_t *old, position_t *p, move_t mv);
-square_t low_level_apply_move(position_t *p, move_t mv);
 victims_t make_move(position_t *old, position_t *p, move_t mv);
-victims_t apply_move(position_t *p, move_t mv);
-void undo_move(position_t *p, victims_t victims, move_t mv);
 void display(position_t *p);
 uint64_t compute_zob_key(position_t *p);
 

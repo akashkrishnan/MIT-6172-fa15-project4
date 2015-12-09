@@ -41,7 +41,7 @@ static void initialize_scout_node(searchNode *node, int depth) {
   node->ply = node->parent->ply + 1;
   node->subpv[0] = 0;
   node->legal_move_count = 0;
-  node->fake_color_to_move = color_to_move_of(node->position);
+  node->fake_color_to_move = color_to_move_of(&(node->position));
   // point of view = 1 for white, -1 for black
   node->pov = 1 - node->fake_color_to_move * 2;
   node->best_move_index = 0;  // index of best move found
@@ -139,14 +139,14 @@ static score_t scout_search(searchNode *node, int depth,
   }
 
   if (node->quiescence == false) {
-    update_best_move_history(node->position, node->best_move_index,
+    update_best_move_history(&(node->position), node->best_move_index,
                              move_list, number_of_moves_evaluated);
   }
 
   tbassert(abs(node->best_score) != -INF, "best_score = %d\n",
            node->best_score);
 
-  // Reads node->position->key, node->depth, node->best_score, and node->ply
+  // Reads node->position.key, node->depth, node->best_score, and node->ply
   update_transposition_table(node);
 
   return node->best_score;
