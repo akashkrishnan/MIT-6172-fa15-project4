@@ -353,7 +353,7 @@ square_t low_level_make_move(position_t *old, position_t *p, move_t mv) {
 }
 
 /*
- * POSTCONDITION: stomped piece must be removed from hash and board according to returned value stomped_dst_sq
+ * Stomped piece must be removed from hash and board according to returned value stomped_dst_sq
  * p              - the current position to be updated
  * mv             - the move to make in the current position
  */
@@ -420,7 +420,7 @@ square_t low_level_apply_move(position_t *p, move_t mv) {
 }
 
 /*
- * PRECONDITION: stomped piece must be added to hash and board according to stomped_dst_sq
+ * Stomped piece must be added to hash and board according to stomped_dst_sq
  * p              - the current position
  * mv             - the move that resulted in the current position
  */
@@ -660,9 +660,9 @@ victims_t apply_move(position_t *p, move_t mv) {
     }
 
     // Remove zapped piece
-    p->key ^= zob[victims.zapped_sq][victims.zapped]; // Clear sq in hash
-    p->board[victims.zapped_sq] = 0; // Remove piece from board
-    p->key ^= zob[victims.zapped_sq][0]; // Set sq in hash
+    p->key ^= zob[victims.zapped_sq][victims.zapped];  // Clear sq in hash
+    p->board[victims.zapped_sq] = 0;                   // Remove piece from board
+    p->key ^= zob[victims.zapped_sq][0];               // Set sq in hash
 
   } else if (USE_KO &&
              !victims.stomped &&
