@@ -283,11 +283,9 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
 
     (*node_count_serial)++;
 
-    //next_node.position = malloc(sizeof (position_t));
     next_node.position = rootNode.position;
 
     // make the move.
-    //victims_t x = make_move(rootNode.position, next_node.position, mv);
     victims_t x = apply_move(rootNode.position, mv);
 
     if (is_KO(x)) {

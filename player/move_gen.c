@@ -680,8 +680,6 @@ void undo_move(position_t *p, victims_t victims, move_t mv) {
   // Check for KO
   if (is_KO(victims)) {
     // KO --- nothing actually changed
-    // TODO: flip color and return
-    //return;
   } else {
 
     // Check for zapping

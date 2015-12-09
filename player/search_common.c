@@ -250,11 +250,9 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
   bool blunder = false;  // shoot our own piece
   result->next_node.subpv[0] = 0;
   result->next_node.parent = node;
-  //result->next_node.position = malloc(sizeof (position_t));
   result->next_node.position = node->position;
 
   // Make the move, and get any victim pieces.
-  //victims_t victims = make_move(node->position, result->next_node.position, mv);
   victims_t victims = apply_move(node->position, mv);
 
   // Check whether this move changes the board state.
