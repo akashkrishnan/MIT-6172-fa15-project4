@@ -735,7 +735,6 @@ void undo_move(position_t *p, victims_t victims, move_t mv) {
 
 static uint64_t perft_search(position_t *p, int depth, int ply) {
   uint64_t node_count = 0;
-  position_t np;
   sortable_move_t lst[MAX_NUM_MOVES];
   int num_moves;
   int i;
@@ -753,36 +752,107 @@ static uint64_t perft_search(position_t *p, int depth, int ply) {
   for (i = 0; i < num_moves; i++) {
     move_t mv = get_move(lst[i]);
 
-    square_t stomped_sq = low_level_make_move(p, &np, mv); // make the move baby!
+    victims_t victims = {
+                         .stomped = 0, .stomped_sq = 0,
+                         .zapped = 0, .zapped_sq = 0,
+    };
 
-    if (stomped_sq) {
-      tbassert(ptype_of(np.board[stomped_sq]) == PAWN,
-               "ptype_of(np.board[stomped_sq]): %d\n",
-               ptype_of(np.board[stomped_sq]));
+    // STEP 1: translating or rotating with stomping
+    victims.stomped_sq = low_level_apply_move(p, mv);
 
-      np.victims.stomped = np.board[stomped_sq];
-      np.key ^= zob[stomped_sq][np.victims.stomped]; // remove from board
-      np.board[stomped_sq] = 0;
-      np.key ^= zob[stomped_sq][0];
+    // Check for stomping
+    if (victims.stomped_sq) {
+      // Stomped
+      victims.stomped = p->board[victims.stomped_sq];
+
+      // Remove stomped piece
+      p->key ^= zob[victims.stomped_sq][victims.stomped]; // Clear sq in hash
+      p->board[victims.stomped_sq] = 0;                   // Remove piece from board
+      p->key ^= zob[victims.stomped_sq][0];               // Set sq in hash
     }
 
-    square_t victim_sq = fire(&np); // the guy to disappear
+    // STEP 2: firing laser with zapping
+    victims.zapped_sq = fire(p);
 
-    if (victim_sq != 0) { // hit a piece
-      ptype_t typ = ptype_of(np.board[victim_sq]);
-      tbassert((typ != EMPTY) && (typ != INVALID), "typ: %d\n", typ);
-      if (typ == KING) { // do not expand further: hit a King
+    // Check for zapping
+    if (victims.zapped_sq) {
+      // Zapped
+      victims.zapped = p->board[victims.zapped_sq];
+
+      // Do not expand further if we hit a king
+      if (ptype_of(victims.zapped) == KING) {
         node_count++;
+
+        // UNDO MOVE
+
+        // STEP 1: put any zapped and stomped pieces back on board
+
+        // Get zapped square
+        square_t zapped_sq = victims.zapped_sq;
+
+        // Add zapped piece back
+        p->key ^= zob[zapped_sq][p->board[zapped_sq]];  // Clear sq in hash
+        p->board[zapped_sq] = victims.zapped;           // Add piece to sq on board
+        p->key ^= zob[zapped_sq][victims.zapped];       // Add piece to sq in hash
+
+        // Check for stomping
+        if (victims.stomped) {
+          // Get stomped square
+          square_t stomped_sq = victims.stomped_sq;
+
+          // Add stomped piece back
+          p->key ^= zob[stomped_sq][p->board[stomped_sq]];  // Clear sq in hash
+          p->board[stomped_sq] = victims.stomped;           // Add piece to sq on board
+          p->key ^= zob[stomped_sq][victims.stomped];       // Add piece to sq in hash
+        }
+
+        // STEP 2: undo piece translation or rotation
+        low_level_undo_move(p, mv);
+
         continue;
       }
-      np.victims.zapped = np.board[victim_sq];
-      np.key ^= zob[victim_sq][np.victims.zapped]; // remove from board
-      np.board[victim_sq] = 0;
-      np.key ^= zob[victim_sq][0];
+
+      // Remove zapped piece
+      p->key ^= zob[victims.zapped_sq][victims.zapped];  // Clear sq in hash
+      p->board[victims.zapped_sq] = 0;                   // Remove piece from board
+      p->key ^= zob[victims.zapped_sq][0];               // Set sq in hash
     }
 
-    uint64_t partialcount = perft_search(&np, depth - 1, ply + 1);
+    uint64_t partialcount = perft_search(p, depth - 1, ply + 1);
     node_count += partialcount;
+
+    // UNDO MOVE
+
+    // STEP 1: put any zapped and stomped pieces back on board
+
+    // Check for zapping
+    if (victims.zapped) {
+      // Zapped
+
+      // Get square
+      square_t zapped_sq = victims.zapped_sq;
+
+      // Add zapped piece back
+      p->key ^= zob[zapped_sq][p->board[zapped_sq]];  // Clear sq in hash
+      p->board[zapped_sq] = victims.zapped;           // Add piece to sq on board
+      p->key ^= zob[zapped_sq][victims.zapped];       // Add piece to sq in hash
+    }
+
+    // Check for stomping
+    if (victims.stomped) {
+      // Stomped
+
+      // Get square
+      square_t stomped_sq = victims.stomped_sq;
+
+      // Add stomped piece back
+      p->key ^= zob[stomped_sq][p->board[stomped_sq]];  // Clear sq in hash
+      p->board[stomped_sq] = victims.stomped;           // Add piece to sq on board
+      p->key ^= zob[stomped_sq][victims.stomped];       // Add piece to sq in hash
+    }
+
+    // STEP 2: undo piece translation or rotation
+    low_level_undo_move(p, mv);
   }
 
   return node_count;
