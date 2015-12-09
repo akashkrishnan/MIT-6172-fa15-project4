@@ -197,6 +197,32 @@ static score_t searchPV(searchNode *node, int depth, uint64_t *node_count_serial
   return node->best_score;
 }
 
+void checkSameVictims(victims_t *a, victims_t *b) {
+  if (a->stomped != b->stomped) {
+    printf("stomped MISMATCH\n");
+  }
+  if (a->zapped != b->zapped) {
+    printf("zapped MISMATCH\n");
+  }
+}
+
+void checkSamePositions(position_t *a, position_t *b) {
+  if (a->key != b->key) {
+    printf("key MISMATCH\n");
+  }
+  if (a->white_pawn_count != b->white_pawn_count) {
+    printf("white_pawn_count MISMATCH\n");
+  }
+  if (a->black_pawn_count != b->black_pawn_count) {
+    printf("black_pawn_count MISMATCH\n");
+  }
+  for (int i = 0; i < 16; i++) {
+    if (a->board[i] != b->board[i]) {
+      printf("board[%d]\n", i);
+    }
+  }
+}
+
 // -----------------------------------------------------------------------------
 // searchRoot
 //
@@ -257,12 +283,22 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
 
     (*node_count_serial)++;
 
-    //next_node.position = rootNode.position;
     next_node.position = malloc(sizeof (position_t));
+    //next_node.position = rootNode.position;
 
     // make the move.
-    //victims_t x = apply_move(rootNode.position, mv);
     victims_t x = make_move(rootNode.position, next_node.position, mv);
+
+    position_t *p2 = malloc(sizeof (position_t));
+    memcpy(p2, rootNode.position, sizeof (position_t));
+    victims_t x2 = apply_move(p2, mv);
+    checkSameVictims(&x, &x2);
+    checkSamePositions(next_node.position, p2);
+
+    undo_move(next_node.position, x2, mv);
+    checkSamePositions(rootNode.position, next_node.position);
+    
+    x = make_move(rootNode.position, next_node.position, mv);
 
     if (is_KO(x)) {
       //undo_move(rootNode.position, x, mv);
