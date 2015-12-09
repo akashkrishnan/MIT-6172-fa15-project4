@@ -283,25 +283,15 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
 
     (*node_count_serial)++;
 
-    next_node.position = malloc(sizeof (position_t));
-    //next_node.position = rootNode.position;
+    //next_node.position = malloc(sizeof (position_t));
+    next_node.position = rootNode.position;
 
     // make the move.
-    victims_t x = make_move(rootNode.position, next_node.position, mv);
-
-    position_t *p2 = malloc(sizeof (position_t));
-    memcpy(p2, rootNode.position, sizeof (position_t));
-    victims_t x2 = apply_move(p2, mv);
-    checkSameVictims(&x, &x2);
-    checkSamePositions(next_node.position, p2);
-
-    undo_move(next_node.position, x2, mv);
-    checkSamePositions(rootNode.position, next_node.position);
-    
-    x = make_move(rootNode.position, next_node.position, mv);
+    //victims_t x = make_move(rootNode.position, next_node.position, mv);
+    victims_t x = apply_move(rootNode.position, mv);
 
     if (is_KO(x)) {
-      //undo_move(rootNode.position, x, mv);
+      undo_move(rootNode.position, x, mv);
       continue;  // not a legal move
     }
 
@@ -324,7 +314,7 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
 
       // Check if we should abort due to time control.
       if (abortf) {
-        //undo_move(rootNode.position, x, mv);
+        undo_move(rootNode.position, x, mv);
         return 0;
       }
     } else {
@@ -332,7 +322,7 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
 
       // Check if we should abort due to time control.
       if (abortf) {
-        //undo_move(rootNode.position, x, mv);
+        undo_move(rootNode.position, x, mv);
         return 0;
       }
 
@@ -342,7 +332,7 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
 
         // Check if we should abort due to time control.
         if (abortf) {
-          //undo_move(rootNode.position, x, mv);
+          undo_move(rootNode.position, x, mv);
           return 0;
         }
       }
@@ -353,7 +343,7 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
     tbassert((score > rootNode.best_score) == (score > rootNode.alpha),
              "score = %d, best = %d, alpha = %d\n", score, rootNode.best_score, rootNode.alpha);
 
-    //undo_move(rootNode.position, x, mv);
+    undo_move(rootNode.position, x, mv);
 
     if (score > rootNode.best_score) {
       tbassert(score > rootNode.alpha, "score: %d, alpha: %d\n", score, rootNode.alpha);
