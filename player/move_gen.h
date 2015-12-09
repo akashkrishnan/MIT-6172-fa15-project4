@@ -305,8 +305,7 @@ static inline move_t move_of(ptype_t typ, rot_t rot, square_t from_sq, square_t 
       ((to_sq & TO_MASK) << TO_SHIFT);
 }
 void move_to_str(move_t mv, char *buf, size_t bufsize);
-int generate_all(position_t *p, sortable_move_t *sortable_move_list,
-                 bool strict);
+int generate_all(position_t *p, sortable_move_t *sortable_move_list);
 void do_perft(position_t *gme, int depth, int ply);
 square_t low_level_make_move(position_t *old, position_t *p, move_t mv);
 square_t low_level_apply_move(position_t *p, move_t mv);

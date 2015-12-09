@@ -11,7 +11,7 @@ consisting of three main functions:
 searchRoot() calls scout_search() to order the moves.  searchRoot() then
 calls searchPV() to perform the full search.  A sample parallel
 implementation has been provided for you.
-*/
+ */
 
 #include "./search.h"
 
@@ -76,6 +76,7 @@ static score_t scout_search(searchNode *node, int depth,
 
 // Initializes a PV (principle variation node)
 //   https://chessprogramming.wikispaces.com/Node+Types#PV
+
 static void initialize_pv_node(searchNode* node, int depth) {
   node->type = SEARCH_PV;
   node->alpha = -node->parent->beta;
@@ -96,6 +97,7 @@ static void initialize_pv_node(searchNode* node, int depth) {
 
 // Perform a Principle Variation Search
 //   https://chessprogramming.wikispaces.com/Principal+Variation+Search
+
 static score_t searchPV(searchNode *node, int depth, uint64_t *node_count_serial) {
   // Initialize the searchNode data structure.
   initialize_pv_node(node, depth);
@@ -143,7 +145,7 @@ static score_t searchPV(searchNode *node, int depth, uint64_t *node_count_serial
   int num_moves_tried = 0;
 
   moveEvaluationResult result;
-  
+
   // Start searching moves.
   for (int mv_index = 0; mv_index < num_of_moves; mv_index++) {
     // Incrementally sort the move list.
@@ -154,9 +156,9 @@ static score_t searchPV(searchNode *node, int depth, uint64_t *node_count_serial
     num_moves_tried++;
     (*node_count_serial)++;
 
-    evaluateMove(&result,node, mv, killer_a, killer_b,
-                                               SEARCH_PV,
-                                               node_count_serial);
+    evaluateMove(&result, node, mv, killer_a, killer_b,
+                 SEARCH_PV,
+                 node_count_serial);
 
     if (result.type == MOVE_ILLEGAL || result.type == MOVE_IGNORE) {
       continue;
@@ -228,8 +230,13 @@ void checkSamePositions(position_t *a, position_t *b) {
 //
 // This handles scout search logic for the first level of the search tree
 // -----------------------------------------------------------------------------
-static void initialize_root_node(searchNode *node, score_t alpha, score_t beta, int depth,
-                            int ply, position_t* p) {
+
+static void initialize_root_node(searchNode *node,
+                                 score_t alpha,
+                                 score_t beta,
+                                 int depth,
+                                 int ply,
+                                 position_t* p) {
   node->type = SEARCH_ROOT;
   node->alpha = alpha;
   node->beta = beta;
@@ -242,8 +249,13 @@ static void initialize_root_node(searchNode *node, score_t alpha, score_t beta, 
   node->abort = false;
 }
 
-score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
-                   int ply, move_t *pv, uint64_t *node_count_serial,
+score_t searchRoot(position_t *p,
+                   score_t alpha,
+                   score_t beta,
+                   int depth,
+                   int ply,
+                   move_t *pv,
+                   uint64_t *node_count_serial,
                    FILE *OUT) {
   static int num_of_moves = 0;  // number of moves in list
   // hopefully, more than we will need
@@ -251,7 +263,7 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
 
   if (depth == 1) {
     // we are at depth 1; generate all possible moves
-    num_of_moves = generate_all(p, move_list, false);
+    num_of_moves = generate_all(p, move_list);
     // shuffle the list of moves
     for (int i = 0; i < num_of_moves; i++) {
       int r = myrand() % num_of_moves;
@@ -264,7 +276,6 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
   searchNode rootNode;
   rootNode.parent = NULL;
   initialize_root_node(&rootNode, alpha, beta, depth, ply, p);
-
 
   assert(rootNode.best_score == alpha);  // initial conditions
 
@@ -308,7 +319,7 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
 
     if (mv_index == 0 || rootNode.depth == 1) {
       // We guess that the first move is the principle variation
-      score = -searchPV(&next_node, rootNode.depth-1, node_count_serial);
+      score = -searchPV(&next_node, rootNode.depth - 1, node_count_serial);
 
       // Check if we should abort due to time control.
       if (abortf) {
@@ -316,7 +327,7 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
         return 0;
       }
     } else {
-      score = -scout_search(&next_node, rootNode.depth-1, node_count_serial);
+      score = -scout_search(&next_node, rootNode.depth - 1, node_count_serial);
 
       // Check if we should abort due to time control.
       if (abortf) {
@@ -326,7 +337,7 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
 
       // If its score exceeds the current best score,
       if (score > rootNode.alpha) {
-        score = -searchPV(&next_node, rootNode.depth-1, node_count_serial);
+        score = -searchPV(&next_node, rootNode.depth - 1, node_count_serial);
 
         // Check if we should abort due to time control.
         if (abortf) {
@@ -336,7 +347,7 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
       }
     }
 
-  scored:
+scored:
     // only valid for the root node:
     tbassert((score > rootNode.best_score) == (score > rootNode.alpha),
              "score = %d, best = %d, alpha = %d\n", score, rootNode.best_score, rootNode.alpha);
@@ -348,7 +359,7 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
 
       rootNode.best_score = score;
       pv[0] = mv;
-      memcpy(pv+1, next_node.subpv, sizeof(move_t) * (MAX_PLY_IN_SEARCH - 1));
+      memcpy(pv + 1, next_node.subpv, sizeof (move_t) * (MAX_PLY_IN_SEARCH - 1));
       pv[MAX_PLY_IN_SEARCH - 1] = 0;
 
       // Print out based on UCI (universal chess interface)

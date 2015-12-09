@@ -128,15 +128,11 @@ void move_to_str(move_t mv, char *buf, size_t bufsize) {
 // Generate all moves from position p.  Returns number of moves.
 // strict currently ignored
 
-int generate_all(position_t *p, sortable_move_t *sortable_move_list,
-                 bool strict) {
+int generate_all(position_t *p, sortable_move_t *sortable_move_list) {
   color_t color_to_move = color_to_move_of(p);
-  // Make sure that the enemy_laser map is marked
-  char laser_map[ARR_SIZE];
 
-  for (int i = 0; i < ARR_SIZE; ++i) {
-    laser_map[i] = 4; // Invalid square
-  }
+  // Make sure that the enemy_laser map is marked
+  char laser_map[ARR_SIZE] = {4};
 
   for (fil_t f = 0; f < BOARD_WIDTH; ++f) {
     for (rnk_t r = 0; r < BOARD_WIDTH; ++r) {
@@ -163,9 +159,11 @@ int generate_all(position_t *p, sortable_move_t *sortable_move_list,
         case PAWN:
           if (laser_map[sq] == 1) continue; // Piece is pinned down by laser.
         case KING:
+          
           if (color != color_to_move) { // Wrong color
             break;
           }
+
           // directions
           for (int d = 0; d < 8; d++) {
             int dest = sq + dir_of(d);
@@ -203,6 +201,7 @@ int generate_all(position_t *p, sortable_move_t *sortable_move_list,
             tbassert(move_count < MAX_NUM_MOVES, "move_count: %d\n", move_count);
             sortable_move_list[move_count++] = move_of(typ, (rot_t) 0, sq, sq);
           }
+
           break;
         case INVALID:
         default:
@@ -743,7 +742,7 @@ static uint64_t perft_search(position_t *p, int depth, int ply) {
     return 1;
   }
 
-  num_moves = generate_all(p, lst, true);
+  num_moves = generate_all(p, lst);
 
   if (depth == 1) {
     return num_moves;

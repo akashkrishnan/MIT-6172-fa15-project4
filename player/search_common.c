@@ -444,7 +444,7 @@ bool should_abort_check() {
 static int get_sortable_move_list(searchNode *node, sortable_move_t * move_list,
                          int hash_table_move) {
   // number of moves in list
-  int num_of_moves = generate_all(node->position, move_list, false);
+  int num_of_moves = generate_all(node->position, move_list);
 
   color_t fake_color_to_move = color_to_move_of(node->position);
 
