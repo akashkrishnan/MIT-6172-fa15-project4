@@ -250,15 +250,17 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
   bool blunder = false;  // shoot our own piece
   result->next_node.subpv[0] = 0;
   result->next_node.parent = node;
+  result->next_node.position = malloc(sizeof (position_t));
 
   // Make the move, and get any victim pieces.
-  victims_t victims = make_move(node->position, result->next_node.position,
-                                mv);
+  victims_t victims = make_move(node->position, result->next_node.position, mv);
 
   // Check whether this move changes the board state.
   //   such moves are not legal.
   if (is_KO(victims)) {
     result->type = MOVE_ILLEGAL;
+    free(result->next_node.position);
+    result->next_node.position = NULL;
     return;
   }
 
@@ -267,12 +269,16 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
     // Compute the end-game score.
     result->type = MOVE_GAMEOVER;
     result->score = get_game_over_score(victims, node->pov, node->ply);
+    free(result->next_node.position);
+    result->next_node.position = NULL;
     return;
   }
 
   // Ignore noncapture moves when in quiescence.
   if (zero_victims(victims) && node->quiescence) {
     result->type = MOVE_IGNORE;
+    free(result->next_node.position);
+    result->next_node.position = NULL;
     return;
   }
 
@@ -362,6 +368,9 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
       }
     }
   }
+
+  free(result->next_node.position);
+  result->next_node.position = NULL;
 
   return;
 }
