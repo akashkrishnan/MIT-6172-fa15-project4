@@ -505,7 +505,7 @@ int main(int argc, char *argv[]) {
           fprintf(OUT, "Second argument (move positon) required.\n");
           continue;
         }
-        if (is_KO(victims)) {
+        if (is_KO(&victims)) {
           fprintf(OUT, "Illegal move %s\n", tok[1]);
         } else {
           ix++;
@@ -635,7 +635,7 @@ int main(int argc, char *argv[]) {
           fprintf(OUT, "info score cp %d\n", score);
         } else {  // get and evaluate move
           victims_t victims = make_from_string(&gme[ix], &gme[ix+1], tok[1]);
-          if (is_KO(victims)) {
+          if (is_KO(&victims)) {
             printf("Illegal move\n");
           } else {
             // evaluated from opponent's pov

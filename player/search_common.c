@@ -90,31 +90,8 @@ static score_t get_draw_score(searchNode *node, int ply) {
     x = x->parent;
   }
 
-  assert(false);  // This should not occur.
   return (score_t) 0;
 }
-
-
-
-// Detect move repetition
-
-static bool is_repeated(searchNode *node) {
-  if (!DETECT_DRAWS) {
-    return false;  // no draw detected
-  }
-
-  searchNode *x = node->parent;
-  uint64_t cur = node->key;
-
-  while (x) {
-    if (!zero_victims(&x->victims)) break;
-    if (x->key == cur) return true;
-    x = x->parent;
-  }
-  
-  return false;
-}
-
 
 
 // check the victim pieces returned by the move to determine if it's a
@@ -264,9 +241,9 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
 
   // TODO: NEED TO UNCOMMENT THIS
   // Check whether the board state has been repeated, this results in a draw.
-  if (is_repeated(&result->next_node)) {
+  result->score = get_draw_score(&result->next_node, node->ply);
+  if (result->score) {
     result->type = MOVE_GAMEOVER;
-    result->score = get_draw_score(&result->next_node, node->ply);
     undo_move(&result->next_node, mv);
     return;
   }

@@ -661,6 +661,14 @@ inline void undo_move(searchNode *node, move_t mv) {
   // Check for KO
   if (is_KO(&node->victims)) {
     // KO --- nothing actually changed
+
+    // Swap turns
+    p->key ^= zob_color;
+
+    // Increment ply
+    p->ply--;
+
+    return;
   } else {
 
     // Check for zapping

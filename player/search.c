@@ -310,8 +310,8 @@ score_t searchRoot(position_t *p,
       goto scored;
     }
 
-    if (is_repeated(&next_node)) {
-      score = get_draw_score(&next_node, rootNode.ply);
+    score = get_draw_score(&next_node, rootNode.ply);
+    if (score) {
       next_node.subpv[0] = 0;
       goto scored;
     }
