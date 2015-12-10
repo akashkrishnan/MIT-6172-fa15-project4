@@ -219,7 +219,6 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
   //   such moves are not legal.
   if (is_KO(&result->next_node.victims)) {
     result->type = MOVE_ILLEGAL;
-    undo_move(&result->next_node, mv);
     return;
   }
 
@@ -228,14 +227,12 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
     // Compute the end-game score.
     result->type = MOVE_GAMEOVER;
     result->score = get_game_over_score(&result->next_node, node->pov, node->ply);
-    undo_move(&result->next_node, mv);
     return;
   }
 
   // Ignore noncapture moves when in quiescence.
   if (zero_victims(&result->next_node.victims) && node->quiescence) {
     result->type = MOVE_IGNORE;
-    undo_move(&result->next_node, mv);
     return;
   }
 
@@ -244,7 +241,6 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
   result->score = get_draw_score(&result->next_node, node->ply);
   if (result->score) {
     result->type = MOVE_GAMEOVER;
-    undo_move(&result->next_node, mv);
     return;
   }
 
@@ -266,7 +262,6 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
   // Do not consider moves that are blunders while in quiescence.
   if (node->quiescence && blunder) {
     result->type = MOVE_IGNORE;
-    undo_move(&result->next_node, mv);
     return;
   }
 
@@ -300,7 +295,6 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
                                             node_count_serial);
     if (reduced_depth_score < node->beta) {
       result->score = reduced_depth_score;
-      undo_move(&result->next_node, mv);
       return;
     }
     search_depth += next_reduction;
@@ -310,7 +304,6 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
   if (abortf) {
     result->score = 0;
     result->type = MOVE_IGNORE;
-    undo_move(&result->next_node, mv);
     return;
   }
 
@@ -330,7 +323,6 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
     }
   }
 
-  undo_move(&result->next_node, mv);
   return;
 }
 
@@ -353,8 +345,8 @@ void sort_incremental_full(sortable_move_t *move_list, int num_of_moves, int mv_
   for (int j = 0; j < num_of_moves; j++) {
     sortable_move_t insert = move_list[j];
     int hole = j;
-    while (hole > 0 && insert > move_list[hole-1]) {
-      move_list[hole] = move_list[hole-1];
+    while (hole > 0 && insert > move_list[hole - 1]) {
+      move_list[hole] = move_list[hole - 1];
       hole--;
     }
     move_list[hole] = insert;
