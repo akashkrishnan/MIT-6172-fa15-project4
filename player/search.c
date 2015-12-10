@@ -199,31 +199,31 @@ static score_t searchPV(searchNode *node, int depth, uint64_t *node_count_serial
   return node->best_score;
 }
 
-void checkSameVictims(victims_t *a, victims_t *b) {
-  if (a->stomped != b->stomped) {
-    printf("stomped MISMATCH\n");
-  }
-  if (a->zapped != b->zapped) {
-    printf("zapped MISMATCH\n");
-  }
-}
-
-void checkSamePositions(position_t *a, position_t *b) {
-  if (a->key != b->key) {
-    printf("key MISMATCH\n");
-  }
-  if (a->white_pawn_count != b->white_pawn_count) {
-    printf("white_pawn_count MISMATCH\n");
-  }
-  if (a->black_pawn_count != b->black_pawn_count) {
-    printf("black_pawn_count MISMATCH\n");
-  }
-  for (int i = 0; i < 16; i++) {
-    if (a->board[i] != b->board[i]) {
-      printf("board[%d]\n", i);
-    }
-  }
-}
+//void checkSameVictims(victims_t *a, victims_t *b) {
+//  if (a->stomped != b->stomped) {
+//    printf("stomped MISMATCH\n");
+//  }
+//  if (a->zapped != b->zapped) {
+//    printf("zapped MISMATCH\n");
+//  }
+//}
+//
+//void checkSamePositions(position_t *a, position_t *b) {
+//  if (a->key != b->key) {
+//    printf("key MISMATCH\n");
+//  }
+//  if (a->pawn_count[WHITE] != b->pawn_count[WHITE]) {
+//    printf("pawn_count[WHITE] MISMATCH\n");
+//  }
+//  if (a->pawn_count[BLACK] != b->pawn_count[BLACK]) {
+//    printf("pawn_count[BLACK] MISMATCH\n");
+//  }
+//  for (int i = 0; i < 16; i++) {
+//    if (a->board[i] != b->board[i]) {
+//      printf("board[%d]\n", i);
+//    }
+//  }
+//}
 
 // -----------------------------------------------------------------------------
 // searchRoot

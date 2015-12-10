@@ -274,9 +274,6 @@ square_t low_level_make_move(position_t *old, position_t *p, move_t mv) {
 
   memcpy(p, old, sizeof (position_t));
 
-  //p->history = old;
-  //p->last_move = mv;
-
   tbassert(from_sq < ARR_SIZE && from_sq > 0, "from_sq: %d\n", from_sq);
   tbassert(p->board[from_sq] < (1 << PIECE_SIZE) && p->board[from_sq] >= 0,
            "p->board[from_sq]: %d\n", p->board[from_sq]);
@@ -546,11 +543,7 @@ victims_t make_move(position_t *old, position_t *p, move_t mv) {
 
   } else { // we definitely stomped something
     p->victims.stomped = p->board[stomped_sq];
-    if (color_of(p->victims.stomped) == WHITE) {
-      p->white_pawn_count -= 1;
-    } else if (color_of(p->victims.stomped) == BLACK) {
-      p->black_pawn_count -= 1;
-    }
+    p->pawn_count[color_of(p->victims.stomped)]--;
     p->key ^= zob[stomped_sq][p->victims.stomped]; // remove from board
     p->board[stomped_sq] = 0;
     p->key ^= zob[stomped_sq][p->board[stomped_sq]];
@@ -585,11 +578,7 @@ victims_t make_move(position_t *old, position_t *p, move_t mv) {
     }
   } else { // we definitely hit something with laser
     p->victims.zapped = p->board[victim_sq];
-    if (color_of(p->victims.zapped) == WHITE) {
-      p->white_pawn_count -= 1;
-    } else if (color_of(p->victims.zapped) == BLACK) {
-      p->black_pawn_count -= 1;
-    }
+    p->pawn_count[color_of(p->victims.zapped)]--;
     p->key ^= zob[victim_sq][p->victims.zapped]; // remove from board
     p->board[victim_sq] = 0;
     p->key ^= zob[victim_sq][0];
@@ -628,11 +617,7 @@ victims_t apply_move(position_t *p, move_t mv) {
     victims.stomped = p->board[victims.stomped_sq];
 
     // Decrement pawn count
-    if (color_of(victims.stomped) == WHITE) {
-      p->white_pawn_count--;
-    } else if (color_of(victims.stomped) == BLACK) {
-      p->black_pawn_count--;
-    }
+    p->pawn_count[color_of(victims.stomped)]--;
 
     // Remove stomped piece
     p->key ^= zob[victims.stomped_sq][victims.stomped]; // Clear sq in hash
@@ -650,11 +635,7 @@ victims_t apply_move(position_t *p, move_t mv) {
     victims.zapped = p->board[victims.zapped_sq];
 
     // Decrement pawn count
-    if (color_of(victims.zapped) == WHITE) {
-      p->white_pawn_count--;
-    } else if (color_of(victims.zapped) == BLACK) {
-      p->black_pawn_count--;
-    }
+    p->pawn_count[color_of(victims.zapped)]--;
 
     // Remove zapped piece
     p->key ^= zob[victims.zapped_sq][victims.zapped];  // Clear sq in hash
@@ -689,11 +670,7 @@ void undo_move(position_t *p, victims_t victims, move_t mv) {
       square_t zapped_sq = victims.zapped_sq;
 
       // Increment pawn count
-      if (color_of(victims.zapped) == WHITE) {
-        p->white_pawn_count++;
-      } else if (color_of(victims.zapped) == BLACK) {
-        p->black_pawn_count++;
-      }
+      p->pawn_count[color_of(victims.zapped)]++;
 
       // Add zapped piece back
       p->key ^= zob[zapped_sq][p->board[zapped_sq]];  // Clear sq in hash
@@ -709,11 +686,7 @@ void undo_move(position_t *p, victims_t victims, move_t mv) {
       square_t stomped_sq = victims.stomped_sq;
 
       // Increment pawn count
-      if (color_of(victims.stomped) == WHITE) {
-        p->white_pawn_count++;
-      } else if (color_of(victims.stomped) == BLACK) {
-        p->black_pawn_count++;
-      }
+      p->pawn_count[color_of(victims.stomped)]++;
 
       // Add stomped piece back
       p->key ^= zob[stomped_sq][p->board[stomped_sq]];  // Clear sq in hash

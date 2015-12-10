@@ -187,10 +187,9 @@ int mark_laser_path(position_t *p, char *laser_map, color_t c,
   square_t o_king_sq = p->kloc[color];
 
   if (c == WHITE) { // opposing king pins our pawns 
-    total_pawns = p->black_pawn_count;
-  }
-  else {
-    total_pawns = p->white_pawn_count;
+    total_pawns = p->pawn_count[BLACK];
+  } else {
+    total_pawns = p->pawn_count[WHITE];
   }
 
   // Fire laser, recording in laser_map

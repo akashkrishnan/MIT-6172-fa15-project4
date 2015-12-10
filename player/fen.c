@@ -89,11 +89,11 @@ static int parse_fen_board(position_t *p, char *fen) {
         } else if (next_c == 'W') {  // White Pawn facing NW
           ori = NW;
           typ = PAWN;
-          p->white_pawn_count += 1;
+          p->pawn_count[WHITE]++;
         } else if (next_c == 'E') {  // White Pawn facing NE
           ori = NE;
           typ = PAWN;
-          p->white_pawn_count += 1;
+          p->pawn_count[WHITE]++;
         } else {
           fen_error(fen, c_count+1, "Syntax error");
           return 0;
@@ -116,11 +116,11 @@ static int parse_fen_board(position_t *p, char *fen) {
         } else if (next_c == 'w') {  // Black Pawn facing NW
           ori = NW;
           typ = PAWN;
-          p->black_pawn_count += 1;
+          p->pawn_count[BLACK]++;
         } else if (next_c == 'e') {  // Black Pawn facing NE
           ori = NE;
           typ = PAWN;
-          p->black_pawn_count += 1;
+          p->pawn_count[BLACK]++;
         } else {
           fen_error(fen, c_count+1, "Syntax error");
           return 0;
@@ -143,11 +143,11 @@ static int parse_fen_board(position_t *p, char *fen) {
         } else if (next_c == 'W') {  // White Pawn facing SW
           ori = SW;
           typ = PAWN;
-          p->white_pawn_count += 1;
+          p->pawn_count[WHITE]++;
         } else if (next_c == 'E') {  // White Pawn facing SE
           ori = SE;
           typ = PAWN;
-          p->white_pawn_count += 1;
+          p->pawn_count[WHITE]++;
         } else {
           fen_error(fen, c_count+1, "Syntax error");
           return 0;
@@ -170,11 +170,11 @@ static int parse_fen_board(position_t *p, char *fen) {
         } else if (next_c == 'w') {  // Black Pawn facing SW
           ori = SW;
           typ = PAWN;
-          p->black_pawn_count += 1;
+          p->pawn_count[BLACK]++;
         } else if (next_c == 'e') {  // Black Pawn facing SE
           ori = SE;
           typ = PAWN;
-          p->black_pawn_count += 1;
+          p->pawn_count[BLACK]++;
         } else {
           fen_error(fen, c_count+1, "Syntax error");
           return 0;

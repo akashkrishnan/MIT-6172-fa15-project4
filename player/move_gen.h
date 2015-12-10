@@ -137,8 +137,7 @@ typedef struct position {
     victims_t victims; // pieces destroyed by shooter or stomper
     square_t kloc[2]; // location of kings
     uint16_t ply; // Even ply are White, odd are Black
-    uint8_t white_pawn_count; // Number of white pawns
-    uint8_t black_pawn_count; // Number of black pawns
+    uint8_t pawn_count[2]; // Number of white/black pawns
 } position_t;
 
 // -----------------------------------------------------------------------------
