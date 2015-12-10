@@ -376,6 +376,7 @@ scored:
       fprintf(OUT, "info score cp %d pv %s\n", score, pvbuf);
 
       // Slide this move to the front of the move list
+      //memmove(&move_list[1], &move_list[0], sizeof (mv) * mv_index);
       for (int j = mv_index; j > 0; j--) {
         move_list[j] = move_list[j - 1];
       }
