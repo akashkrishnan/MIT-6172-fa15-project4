@@ -1,3 +1,6 @@
+
+#include "search.h"
+
 // Copyright (c) 2015 MIT License by 6.172 Staff
 
 // tic counter for how often we should check for abort
@@ -77,28 +80,19 @@ move_t get_move(sortable_move_t sortable_mv) {
   return (move_t) (sortable_mv & MOVE_MASK);
 }
 
-static score_t get_draw_score(position_t *p, int ply) {
-  position_t *x = p->history;
-  uint64_t cur = p->key;
-  score_t score;
-  while (true) {
-    if (!zero_victims(x->victims)) {
-      break;  // cannot be a repetition
-    }
-    x = x->history;
-    if (!zero_victims(x->victims)) {
-      break;  // cannot be a repetition
-    }
-    if (x->key == cur) {  // is a repetition
-      if (ply & 1) {
-        score = -DRAW;
-      } else {
-        score = DRAW;
-      }
-      return score;
-    }
-    x = x->history;
+static score_t get_draw_score(searchNode *node, int ply) {
+  searchNode *x = node->parent;
+  uint64_t cur = node->position->key;
+
+  while (x) {
+    if (!zero_victims(x->position->victims)) break;
+    x = x->parent;
+    if (!x) break;
+    if (!zero_victims(x->position->victims)) break;
+    if (x->position->key == cur) return (ply & 1) ? -DRAW : DRAW;
+    x = x->parent;
   }
+
   assert(false);  // This should not occur.
   return (score_t) 0;
 }
@@ -106,27 +100,36 @@ static score_t get_draw_score(position_t *p, int ply) {
 
 
 // Detect move repetition
-static bool is_repeated(position_t *p, int ply) {
+
+static bool is_repeated(searchNode *node, int ply) {
   if (!DETECT_DRAWS) {
     return false;  // no draw detected
   }
 
-  position_t *x = p->history;
-  uint64_t cur = p->key;
+  searchNode *x = node->parent;
+  uint64_t cur = node->position->key;
 
-  while (true) {
-    if (!zero_victims(x->victims)) {
+  while (x) {
+
+    if (!zero_victims(x->position->victims)) {
       break;  // cannot be a repetition
     }
-    x = x->history;
-    if (!zero_victims(x->victims)) {
+
+    x = x->parent;
+    if (!x) return false;
+
+    if (!zero_victims(x->position->victims)) {
       break;  // cannot be a repetition
     }
-    if (x->key == cur) {  // is a repetition
+
+    if (x->position->key == cur) {  // is a repetition
       return true;
     }
-    x = x->history;
+
+    x = x->parent;
+
   }
+  
   return false;
 }
 
@@ -281,9 +284,9 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
 
   // TODO: NEED TO UNCOMMENT THIS
   // Check whether the board state has been repeated, this results in a draw.
-  /*if (is_repeated(result->next_node->position, node->ply)) {
+  /*if (is_repeated(&result->next_node, node->ply)) {
     result->type = MOVE_GAMEOVER;
-    result->score = get_draw_score(result->next_node->position, node->ply);
+    result->score = get_draw_score(&result->next_node, node->ply);
     return;
   }*/
 
@@ -441,8 +444,10 @@ bool should_abort_check() {
 }
 
 // Obtain a sorted move list.
-static int get_sortable_move_list(searchNode *node, sortable_move_t * move_list,
-                         int hash_table_move) {
+
+static int get_sortable_move_list(searchNode *node,
+                                  sortable_move_t * move_list,
+                                  int hash_table_move) {
   // number of moves in list
   int num_of_moves = generate_all(node->position, move_list);
 

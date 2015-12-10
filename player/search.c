@@ -310,12 +310,11 @@ score_t searchRoot(position_t *p,
       goto scored;
     }
 
-    // TODO: figure out how to deal with is_repeated
-    /*if (is_repeated(next_node.position, rootNode.ply)) {
-      score = get_draw_score(next_node.position, rootNode.ply);
+    if (is_repeated(&next_node, rootNode.ply)) {
+      score = get_draw_score(&next_node, rootNode.ply);
       next_node.subpv[0] = 0;
       goto scored;
-    }*/
+    }
 
     if (mv_index == 0 || rootNode.depth == 1) {
       // We guess that the first move is the principle variation

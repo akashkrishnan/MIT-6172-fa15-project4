@@ -132,15 +132,15 @@ typedef struct victims_t {
 // -----------------------------------------------------------------------------
 
 typedef struct position {
-  piece_t      board[ARR_SIZE];           // variable number of pieces
-  struct position  *history;     // history of position
-  uint64_t     key;              // hash key
-  move_t       last_move;        // move that led to this position
-  victims_t    victims;          // pieces destroyed by shooter or stomper
-  square_t     kloc[2];          // location of kings
-  uint16_t     ply;              // Even ply are White, odd are Black
-  uint8_t      white_pawn_count; // Number of white pawns
-  uint8_t      black_pawn_count; // Number of black pawns
+    piece_t board[ARR_SIZE]; // variable number of pieces
+    struct position *history; // history of position
+    uint64_t key; // hash key
+    move_t last_move; // move that led to this position
+    victims_t victims; // pieces destroyed by shooter or stomper
+    square_t kloc[2]; // location of kings
+    uint16_t ply; // Even ply are White, odd are Black
+    uint8_t white_pawn_count; // Number of white pawns
+    uint8_t black_pawn_count; // Number of black pawns
 } position_t;
 
 // -----------------------------------------------------------------------------
