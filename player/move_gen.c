@@ -274,8 +274,8 @@ square_t low_level_make_move(position_t *old, position_t *p, move_t mv) {
 
   memcpy(p, old, sizeof (position_t));
 
-  p->history = old;
-  p->last_move = mv;
+  //p->history = old;
+  //p->last_move = mv;
 
   tbassert(from_sq < ARR_SIZE && from_sq > 0, "from_sq: %d\n", from_sq);
   tbassert(p->board[from_sq] < (1 << PIECE_SIZE) && p->board[from_sq] >= 0,
@@ -879,13 +879,6 @@ void display(position_t *p) {
   printf("info White King: %s, ", buf);
   square_to_str(p->kloc[BLACK], buf, MAX_CHARS_IN_MOVE);
   printf("info Black King: %s\n", buf);
-
-  if (p->last_move != 0) {
-    move_to_str(p->last_move, buf, MAX_CHARS_IN_MOVE);
-    printf("info Last move: %s\n", buf);
-  } else {
-    printf("info Last move: NULL\n");
-  }
 
   for (rnk_t r = BOARD_WIDTH - 1; r >= 0; --r) {
     printf("\ninfo %1d  ", r);
