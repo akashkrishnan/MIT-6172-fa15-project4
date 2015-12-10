@@ -202,7 +202,7 @@ int mark_laser_path(position_t *p, char *laser_map, color_t c,
   laser_map[sq] |= mark_mask;
 
   // we update h_attackable here
-  if (laser_map[sq] != 0) h_attackable = h_dist(sq, o_king_sq);
+  h_attackable = h_dist(sq, o_king_sq);
 
   while (true) {
     sq += beam;
@@ -211,10 +211,10 @@ int mark_laser_path(position_t *p, char *laser_map, color_t c,
 
     switch (ptype_of(p->board[sq])) {
       case EMPTY:  // empty square
-        if(laser_map[sq] != 0) h_attackable += h_dist(sq, o_king_sq);
+        h_attackable += h_dist(sq, o_king_sq);
         break;
       case PAWN:  // Pawn
-        if(laser_map[sq] != 0) h_attackable += h_dist(sq, o_king_sq);
+        h_attackable += h_dist(sq, o_king_sq);
         if (color_of(p->board[sq]) == color) {
           pinned_pawns += 1;
         }
@@ -225,7 +225,7 @@ int mark_laser_path(position_t *p, char *laser_map, color_t c,
         beam = beam_of(bdir);
         break;
       case KING:  // King
-        if(laser_map[sq] != 0) h_attackable += h_dist(sq, o_king_sq);
+        h_attackable += h_dist(sq, o_king_sq);
           return total_pawns - pinned_pawns;
         break;
       case INVALID:  // Ran off edge of board
@@ -409,17 +409,16 @@ score_t eval(position_t *p, bool verbose) {
   //  int corner[2][2] = { {INF, INF}, {INF, INF} };
   ev_score_t bonus;
 
-  char buf[MAX_CHARS_IN_MOVE];
-
+  //char buf[MAX_CHARS_IN_MOVE];
+  color_t c;
   for (fil_t f = 0; f < BOARD_WIDTH; f++) {
     for (rnk_t r = 0; r < BOARD_WIDTH; r++) {
       square_t sq = square_of(f, r);
       piece_t x = p->board[sq];
-      color_t c;
 
-      if (verbose) {
-        square_to_str(sq, buf, MAX_CHARS_IN_MOVE);
-      }
+      //if (verbose) {
+      //  square_to_str(sq, buf, MAX_CHARS_IN_MOVE);
+      //}
 
       switch (ptype_of(x)) {
         case EMPTY:

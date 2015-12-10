@@ -149,8 +149,8 @@ inline static void parallel_merge_sort(sortable_move_t *move_list, int start, in
 
   }
   int mid = ((start + end)/2);
-  parallel_merge_sort(move_list, start, mid);
-  cilk_spawn parallel_merge_sort(move_list, mid+1, end);
+  cilk_spawn parallel_merge_sort(move_list, start, mid);
+  parallel_merge_sort(move_list, mid+1, end);
   cilk_sync;
   merge(move_list, start, mid, end);
 }
