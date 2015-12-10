@@ -1,6 +1,8 @@
 
 #include "search.h"
 
+
+
 // Copyright (c) 2015 MIT License by 6.172 Staff
 
 // tic counter for how often we should check for abort
@@ -210,7 +212,6 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
   bool blunder = false;  // shoot our own piece
   result->next_node.subpv[0] = 0;
   result->next_node.parent = node;
-  result->next_node.position = node->position;
 
   // Make the move, and get any victim pieces.
   apply_move(&result->next_node, mv);
@@ -248,11 +249,11 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
     return;
   }
 
-  tbassert(victims.stomped == 0
-           || color_of(victims.stomped) != node->fake_color_to_move,
-           "stomped = %d, color = %d, fake_color_to_move = %d\n",
-           victims.stomped, color_of(victims.stomped),
-           node->fake_color_to_move);
+  // tbassert(&result->next_node.victims.stomped == 0
+  //        || color_of(&result->next_node.victims.stomped) != node->fake_color_to_move,
+  //         "stomped = %d, color = %d, fake_color_to_move = %d\n",
+   //        &result->next_node.victims.stomped, color_of(result->next_node.victims.stomped),
+    //       node->fake_color_to_move);
 
 
   // Check whether we caused our own piece to be zapped. This isn't considered
@@ -349,7 +350,7 @@ void sort_incremental(sortable_move_t *move_list, int num_of_moves, int mv_index
     
 }
 
-void sort_incremental_full(sortable_move_t *move_list, int num_of_moves, int mv_index) {
+void sort_incremental_full(sortable_move_t *move_list, int num_of_moves) {
   for (int j = 0; j < num_of_moves; j++) {
     sortable_move_t insert = move_list[j];
     int hole = j;
@@ -360,6 +361,19 @@ void sort_incremental_full(sortable_move_t *move_list, int num_of_moves, int mv_
     move_list[hole] = insert;
   }
 }
+
+
+void sort_full (sortable_move_t *move_list, int num_of_moves) {
+  if (num_of_moves < 10) {
+    sort_incremental_full(move_list, num_of_moves);
+  }
+  else{
+    parallel_merge_sort(move_list, 0, num_of_moves-1);
+    mirror_exchange(move_list, 0, num_of_moves-1);
+  }
+}
+
+
 
 // Returns true if a cutoff was triggered, false otherwise.
 bool search_process_score(searchNode *node, move_t mv, int mv_index,

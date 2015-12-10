@@ -12,7 +12,6 @@
 
 #include "./fen.h"
 
-#define MAX(x, y)  ((x) > (y) ? (x) : (y))
 #define MIN(x, y)  ((x) < (y) ? (x) : (y))
 
 int USE_KO; // Respect the Ko rule

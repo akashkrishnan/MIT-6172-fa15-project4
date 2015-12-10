@@ -4,6 +4,7 @@
 #define SEARCH_H
 
 #include <stdio.h>
+#include <cilk/cilk.h>
 #include "./move_gen.h"
 
 // score_t values
@@ -16,6 +17,8 @@
 
 // the maximum possible value for score_t type
 #define MAX_SCORE_VAL INT16_MAX
+
+#define MAX(a,b) (((a)>(b))?(a):(b))
 
 
 /*//// Killer moves table and lookup function
@@ -85,4 +88,70 @@ score_t searchRoot(position_t *p, score_t alpha, score_t beta, int depth,
                    FILE *OUT);
 
 
+inline static void mirror_exchange(sortable_move_t *move_list, int start, int end) {
+  while (start < end) {
+    sortable_move_t t = move_list[start];
+    move_list[start] = move_list[end];
+    move_list[end] = t;
+    start++;
+    end--;
+  }
+}
+
+inline static void exchange(sortable_move_t *move_list, int start, int mid, int end) {
+  mirror_exchange(move_list, start, mid);
+  mirror_exchange(move_list, mid+1, end);
+  
+  mirror_exchange(move_list, start, end);
+}
+
+
+inline static int binary_search (sortable_move_t val, sortable_move_t *move_list, int start, int end) {
+  int low = start;
+  int high = MAX(start,end+1);
+  while (low < high) {
+    int mid = (low + high)/2;
+    if ( val <= move_list[mid]) high = mid;
+    else low = mid+1;
+  }
+  return high;
+}
+inline static void merge(sortable_move_t *move_list, int start, int mid, int end) {
+  int len1 = mid - start + 1;
+  int len2 = end - mid;
+  if (len1 >= len2) {
+    if (len2 <= 0) return;
+    int q1 = (start + mid)/2;
+    int q2 = binary_search(move_list[q1], move_list, mid+1, end);
+    int q3 = q1 + (q2 - mid - 1);
+    exchange(move_list, q1, mid, q2-1);
+    merge(move_list, start, q1-1, q3-1);
+    merge(move_list, q3+1, q2-1, end);
+    
+  }
+  else {
+    if (len1 <= 0) return;
+    int q1 = (mid + 1 + end)/2;
+    int q2 = binary_search(move_list[q1], move_list, start, mid);
+    int q3 = q2 + (q1 - mid - 1);
+    exchange(move_list, q2, mid, q1);
+    merge(move_list, start, q2-1, q3-1);
+    merge(move_list, q3+1, q1, end);
+    
+  }
+}
+void sort_incremental_full(sortable_move_t *move_list, int num_of_moves); 
+inline static void parallel_merge_sort(sortable_move_t *move_list, int start, int end) {
+
+  if ( end <= start) return;
+  if (end-start < 100) {
+    sort_incremental_full(move_list+start, end-start+1);
+
+  }
+  int mid = ((start + end)/2);
+  parallel_merge_sort(move_list, start, mid);
+  cilk_spawn parallel_merge_sort(move_list, mid+1, end);
+  cilk_sync;
+  merge(move_list, start, mid, end);
+}
 #endif  // SEARCH_H
