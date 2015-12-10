@@ -82,14 +82,11 @@ move_t get_move(sortable_move_t sortable_mv) {
 
 static score_t get_draw_score(searchNode *node, int ply) {
   searchNode *x = node->parent;
-  uint64_t cur = node->position->key;
+  uint64_t cur = node->key;
 
   while (x) {
-    if (!zero_victims(x->position->victims)) break;
-    x = x->parent;
-    if (!x) break;
-    if (!zero_victims(x->position->victims)) break;
-    if (x->position->key == cur) return (ply & 1) ? -DRAW : DRAW;
+    if (!zero_victims(&x->victims)) break;
+    if (x->key == cur) return (ply & 1) ? -DRAW : DRAW;
     x = x->parent;
   }
 
@@ -101,33 +98,18 @@ static score_t get_draw_score(searchNode *node, int ply) {
 
 // Detect move repetition
 
-static bool is_repeated(searchNode *node, int ply) {
+static bool is_repeated(searchNode *node) {
   if (!DETECT_DRAWS) {
     return false;  // no draw detected
   }
 
   searchNode *x = node->parent;
-  uint64_t cur = node->position->key;
+  uint64_t cur = node->key;
 
   while (x) {
-
-    if (!zero_victims(x->position->victims)) {
-      break;  // cannot be a repetition
-    }
-
+    if (!zero_victims(&x->victims)) break;
+    if (x->key == cur) return true;
     x = x->parent;
-    if (!x) return false;
-
-    if (!zero_victims(x->position->victims)) {
-      break;  // cannot be a repetition
-    }
-
-    if (x->position->key == cur) {  // is a repetition
-      return true;
-    }
-
-    x = x->parent;
-
   }
   
   return false;
@@ -138,18 +120,16 @@ static bool is_repeated(searchNode *node, int ply) {
 // check the victim pieces returned by the move to determine if it's a
 // game-over situation.  If so, also calculate the score depending on
 // the pov (which player's point of view)
-static bool is_game_over(victims_t victims, int pov, int ply) {
-  tbassert(ptype_of(victims.stomped) != KING, "Stomped a king.\n");
-  if (ptype_of(victims.zapped) == KING) {
-    return true;
-  }
-  return false;
+
+static bool is_game_over(searchNode *node, int pov, int ply) {
+  tbassert(ptype_of(node->victims.stomped) != KING, "Stomped a king.\n");
+  return ptype_of(node->victims.zapped) == KING;
 }
 
-static score_t get_game_over_score(victims_t victims, int pov, int ply) {
-  tbassert(ptype_of(victims.stomped) != KING, "Stomped a king.\n");
+static score_t get_game_over_score(searchNode *node, int pov, int ply) {
+  tbassert(ptype_of(node->victims.stomped) != KING, "Stomped a king.\n");
   score_t score;
-  if (color_of(victims.zapped) == WHITE) {
+  if (color_of(node->victims.zapped) == WHITE) {
     score = -WIN * pov;
   } else {
     score = WIN * pov;
@@ -256,39 +236,40 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
   result->next_node.position = node->position;
 
   // Make the move, and get any victim pieces.
-  victims_t victims = apply_move(node->position, mv);
+  apply_move(&result->next_node, mv);
 
   // Check whether this move changes the board state.
   //   such moves are not legal.
-  if (is_KO(victims)) {
+  if (is_KO(&result->next_node.victims)) {
     result->type = MOVE_ILLEGAL;
-    undo_move(node->position, victims, mv);
+    undo_move(&result->next_node, mv);
     return;
   }
 
   // Check whether the game is over.
-  if (is_game_over(victims, node->pov, node->ply)) {
+  if (is_game_over(&result->next_node, node->pov, node->ply)) {
     // Compute the end-game score.
     result->type = MOVE_GAMEOVER;
-    result->score = get_game_over_score(victims, node->pov, node->ply);
-    undo_move(node->position, victims, mv);
+    result->score = get_game_over_score(&result->next_node, node->pov, node->ply);
+    undo_move(&result->next_node, mv);
     return;
   }
 
   // Ignore noncapture moves when in quiescence.
-  if (zero_victims(victims) && node->quiescence) {
+  if (zero_victims(&result->next_node.victims) && node->quiescence) {
     result->type = MOVE_IGNORE;
-    undo_move(node->position, victims, mv);
+    undo_move(&result->next_node, mv);
     return;
   }
 
   // TODO: NEED TO UNCOMMENT THIS
   // Check whether the board state has been repeated, this results in a draw.
-  /*if (is_repeated(&result->next_node, node->ply)) {
+  if (is_repeated(&result->next_node)) {
     result->type = MOVE_GAMEOVER;
     result->score = get_draw_score(&result->next_node, node->ply);
+    undo_move(&result->next_node, mv);
     return;
-  }*/
+  }
 
   tbassert(victims.stomped == 0
            || color_of(victims.stomped) != node->fake_color_to_move,
@@ -299,29 +280,29 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
 
   // Check whether we caused our own piece to be zapped. This isn't considered
   //   a blunder if we also managed to stomp an enemy piece in the process.
-  if (victims.stomped == 0 &&
-      victims.zapped > 0 &&
-      color_of(victims.zapped) == node->fake_color_to_move) {
+  if (result->next_node.victims.stomped == 0 &&
+      result->next_node.victims.zapped > 0 &&
+      color_of(result->next_node.victims.zapped) == node->fake_color_to_move) {
     blunder = true;
   }
 
   // Do not consider moves that are blunders while in quiescence.
   if (node->quiescence && blunder) {
     result->type = MOVE_IGNORE;
-    undo_move(node->position, victims, mv);
+    undo_move(&result->next_node, mv);
     return;
   }
 
   // Extend the search-depth by 1 if we captured a piece, since that means the
   //   move was interesting.
-  if (victim_exists(victims) && !blunder) {
+  if (victim_exists(result->next_node.victims) && !blunder) {
     ext = 1;
   }
 
   // Late move reductions - or LMR. Only done in scout search.
   int next_reduction = 0;
   if (type == SEARCH_SCOUT && node->legal_move_count + 1 >= LMR_R1 && node->depth > 2 &&
-      zero_victims(victims) && mv != killer_a && mv != killer_b) {
+      zero_victims(&result->next_node.victims) && mv != killer_a && mv != killer_b) {
     if (node->legal_move_count + 1 >= LMR_R2) {
       next_reduction = 2;
     } else {
@@ -342,7 +323,7 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
                                             node_count_serial);
     if (reduced_depth_score < node->beta) {
       result->score = reduced_depth_score;
-      undo_move(node->position, victims, mv);
+      undo_move(&result->next_node, mv);
       return;
     }
     search_depth += next_reduction;
@@ -352,7 +333,7 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
   if (abortf) {
     result->score = 0;
     result->type = MOVE_IGNORE;
-    undo_move(node->position, victims, mv);
+    undo_move(&result->next_node, mv);
     return;
   }
 
@@ -372,7 +353,7 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
     }
   }
 
-  undo_move(node->position, victims, mv);
+  undo_move(&result->next_node, mv);
   return;
 }
 

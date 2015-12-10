@@ -307,8 +307,6 @@ void do_perft(position_t *gme, int depth, int ply);
 square_t low_level_make_move(position_t *old, position_t *p, move_t mv);
 square_t low_level_apply_move(position_t *p, move_t mv);
 victims_t make_move(position_t *old, position_t *p, move_t mv);
-victims_t apply_move(position_t *p, move_t mv);
-void undo_move(position_t *p, victims_t victims, move_t mv);
 void display(position_t *p);
 uint64_t compute_zob_key(position_t *p);
 
@@ -316,14 +314,17 @@ victims_t KO();
 victims_t ILLEGAL();
 
 bool is_ILLEGAL(victims_t victims);
-static inline bool is_KO(victims_t victims) {
-  return (victims.stomped == KO_STOMPED) ||
-      (victims.zapped == KO_ZAPPED);
+
+static inline bool is_KO(victims_t *victims) {
+    return (victims->stomped == KO_STOMPED) ||
+            (victims->zapped == KO_ZAPPED);
 }
-static inline bool zero_victims(victims_t victims) {
-  return (victims.stomped == 0) &&
-      (victims.zapped == 0);
+
+static inline bool zero_victims(victims_t *victims) {
+    return (victims->stomped == 0) &&
+            (victims->zapped == 0);
 }
+
 bool victim_exists(victims_t victims);
 
 int mark_laser_path(position_t *p, char *laser_map, color_t c,

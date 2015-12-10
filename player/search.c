@@ -297,20 +297,20 @@ score_t searchRoot(position_t *p,
     next_node.position = rootNode.position;
 
     // make the move.
-    victims_t x = apply_move(rootNode.position, mv);
+    apply_move(&next_node, mv);
 
-    if (is_KO(x)) {
-      undo_move(rootNode.position, x, mv);
+    if (is_KO(&next_node.victims)) {
+      undo_move(&next_node, mv);
       continue;  // not a legal move
     }
 
-    if (is_game_over(x, rootNode.pov, rootNode.ply)) {
-      score = get_game_over_score(x, rootNode.pov, rootNode.ply);
+    if (is_game_over(&next_node, rootNode.pov, rootNode.ply)) {
+      score = get_game_over_score(&next_node, rootNode.pov, rootNode.ply);
       next_node.subpv[0] = 0;
       goto scored;
     }
 
-    if (is_repeated(&next_node, rootNode.ply)) {
+    if (is_repeated(&next_node)) {
       score = get_draw_score(&next_node, rootNode.ply);
       next_node.subpv[0] = 0;
       goto scored;
@@ -322,7 +322,7 @@ score_t searchRoot(position_t *p,
 
       // Check if we should abort due to time control.
       if (abortf) {
-        undo_move(rootNode.position, x, mv);
+        undo_move(&next_node, mv);
         return 0;
       }
     } else {
@@ -330,7 +330,7 @@ score_t searchRoot(position_t *p,
 
       // Check if we should abort due to time control.
       if (abortf) {
-        undo_move(rootNode.position, x, mv);
+        undo_move(&next_node, mv);
         return 0;
       }
 
@@ -340,7 +340,7 @@ score_t searchRoot(position_t *p,
 
         // Check if we should abort due to time control.
         if (abortf) {
-          undo_move(rootNode.position, x, mv);
+          undo_move(&next_node, mv);
           return 0;
         }
       }
@@ -351,7 +351,7 @@ scored:
     tbassert((score > rootNode.best_score) == (score > rootNode.alpha),
              "score = %d, best = %d, alpha = %d\n", score, rootNode.best_score, rootNode.alpha);
 
-    undo_move(rootNode.position, x, mv);
+    undo_move(&next_node, mv);
 
     if (score > rootNode.best_score) {
       tbassert(score > rootNode.alpha, "score: %d, alpha: %d\n", score, rootNode.alpha);
@@ -376,7 +376,6 @@ scored:
       fprintf(OUT, "info score cp %d pv %s\n", score, pvbuf);
 
       // Slide this move to the front of the move list
-      //memmove(&move_list[1], &move_list[0], sizeof (mv) * mv_index);
       for (int j = mv_index; j > 0; j--) {
         move_list[j] = move_list[j - 1];
       }

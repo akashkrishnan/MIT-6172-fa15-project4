@@ -1,6 +1,6 @@
 // Copyright (c) 2015 MIT License by 6.172 Staff
 
-#include "./move_gen.h"
+#include "./search.h"
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -11,7 +11,6 @@
 #include <inttypes.h>
 
 #include "./fen.h"
-#include "./search.h"
 
 #define MAX(x, y)  ((x) > (y) ? (x) : (y))
 #define MIN(x, y)  ((x) < (y) ? (x) : (y))
@@ -159,7 +158,7 @@ int generate_all(position_t *p, sortable_move_t *sortable_move_list) {
         case PAWN:
           if (laser_map[sq] == 1) continue; // Piece is pinned down by laser.
         case KING:
-          
+
           if (color != color_to_move) { // Wrong color
             break;
           }
@@ -572,7 +571,7 @@ victims_t make_move(position_t *old, position_t *p, move_t mv) {
     p->victims.zapped = 0;
 
     if (USE_KO && // Ko rule
-        zero_victims(p->victims) &&
+        zero_victims(&p->victims) &&
         (p->key == (old->key ^ zob_color))) {
       return KO();
     }
@@ -598,9 +597,10 @@ victims_t make_move(position_t *old, position_t *p, move_t mv) {
 
 // return victim pieces or KO
 
-victims_t apply_move(position_t *p, move_t mv) {
+inline void apply_move(searchNode *node, move_t mv) {
   tbassert(mv != 0, "mv was zero.\n");
 
+  position_t *p = node->position;
   victims_t victims = {
                        .stomped = 0, .stomped_sq = 0,
                        .zapped = 0, .zapped_sq = 0,
@@ -620,10 +620,9 @@ victims_t apply_move(position_t *p, move_t mv) {
     p->pawn_count[color_of(victims.stomped)]--;
 
     // Remove stomped piece
-    p->key ^= zob[victims.stomped_sq][victims.stomped]; // Clear sq in hash
-    p->board[victims.stomped_sq] = 0; // Remove piece from board
-    p->key ^= zob[victims.stomped_sq][0]; // Set sq in hash
-
+    p->key ^= zob[victims.stomped_sq][victims.stomped];  // Clear sq in hash
+    p->board[victims.stomped_sq] = 0;                    // Remove piece from board
+    p->key ^= zob[victims.stomped_sq][0];                // Set sq in hash
   }
 
   // STEP 2: firing laser with zapping
@@ -641,57 +640,59 @@ victims_t apply_move(position_t *p, move_t mv) {
     p->key ^= zob[victims.zapped_sq][victims.zapped];  // Clear sq in hash
     p->board[victims.zapped_sq] = 0;                   // Remove piece from board
     p->key ^= zob[victims.zapped_sq][0];               // Set sq in hash
-
   } else if (USE_KO &&
              !victims.stomped &&
              (p->key == (old_key ^ zob_color))) {
     // No victims & board didn't change; return KO
-    return KO();
+    victims = KO();
   }
 
-  return victims;
+  node->victims = victims;
+  node->key = p->key;
 }
 
-void undo_move(position_t *p, victims_t victims, move_t mv) {
+inline void undo_move(searchNode *node, move_t mv) {
   tbassert(mv != 0, "mv was zero.\n");
+
+  position_t *p = node->position;
 
   // STEP 1: put any zapped and stomped pieces back on board
 
   // Check for KO
-  if (is_KO(victims)) {
+  if (is_KO(&node->victims)) {
     // KO --- nothing actually changed
   } else {
 
     // Check for zapping
-    if (victims.zapped) {
+    if (node->victims.zapped) {
       // Zapped
 
       // Get square
-      square_t zapped_sq = victims.zapped_sq;
+      square_t zapped_sq = node->victims.zapped_sq;
 
       // Increment pawn count
-      p->pawn_count[color_of(victims.zapped)]++;
+      p->pawn_count[color_of(node->victims.zapped)]++;
 
       // Add zapped piece back
-      p->key ^= zob[zapped_sq][p->board[zapped_sq]];  // Clear sq in hash
-      p->board[zapped_sq] = victims.zapped;           // Add piece to sq on board
-      p->key ^= zob[zapped_sq][victims.zapped];       // Add piece to sq in hash
+      p->key ^= zob[zapped_sq][p->board[zapped_sq]];   // Clear sq in hash
+      p->board[zapped_sq] = node->victims.zapped;      // Add piece to sq on board
+      p->key ^= zob[zapped_sq][node->victims.zapped];  // Add piece to sq in hash
     }
 
     // Check for stomping
-    if (victims.stomped) {
+    if (node->victims.stomped) {
       // Stomped
 
       // Get square
-      square_t stomped_sq = victims.stomped_sq;
+      square_t stomped_sq = node->victims.stomped_sq;
 
       // Increment pawn count
-      p->pawn_count[color_of(victims.stomped)]++;
+      p->pawn_count[color_of(node->victims.stomped)]++;
 
       // Add stomped piece back
-      p->key ^= zob[stomped_sq][p->board[stomped_sq]];  // Clear sq in hash
-      p->board[stomped_sq] = victims.stomped;           // Add piece to sq on board
-      p->key ^= zob[stomped_sq][victims.stomped];       // Add piece to sq in hash
+      p->key ^= zob[stomped_sq][p->board[stomped_sq]];   // Clear sq in hash
+      p->board[stomped_sq] = node->victims.stomped;      // Add piece to sq on board
+      p->key ^= zob[stomped_sq][node->victims.stomped];  // Add piece to sq in hash
     }
 
   }

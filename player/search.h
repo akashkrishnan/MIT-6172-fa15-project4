@@ -43,26 +43,35 @@ typedef enum searchType {  // different types of search
   SEARCH_SCOUT
 } searchType_t;
 
+typedef struct subpvNode {
+    struct subpvNode* next;
+    move_t value;
+} subpvNode;
+
 typedef struct searchNode {
-  struct searchNode* parent;
-  searchType_t type;
-  score_t orig_alpha;
-  score_t alpha;
-  score_t beta;
-  int depth;
-  int ply;
-  int fake_color_to_move;
-  int quiescence;
-  int pov;
-  int legal_move_count;
-  bool abort;
-  score_t best_score;
-  int best_move_index;
-  position_t* position;
-  uint64_t key;
-  move_t subpv[MAX_PLY_IN_SEARCH];
+    struct searchNode* parent;
+    searchType_t type;
+    score_t orig_alpha;
+    score_t alpha;
+    score_t beta;
+    int depth;
+    int ply;
+    int fake_color_to_move;
+    int quiescence;
+    int pov;
+    int legal_move_count;
+    bool abort;
+    score_t best_score;
+    int best_move_index;
+    position_t* position;
+    uint64_t key;
+    victims_t victims;
+    move_t subpv[MAX_PLY_IN_SEARCH];
+    //subpvNode* subpv;
 } searchNode;
 
+void apply_move(searchNode *node, move_t mv);
+void undo_move(searchNode *node, move_t mv);
 
 void init_tics();
 void init_abort_timer(double goal_time);
