@@ -98,6 +98,9 @@ static score_t scout_search(searchNode *node, int depth,
   for (int mv_index = 0; mv_index < num_of_moves; mv_index++) {
     if (mv_index == 1) {
       sort_full(move_list, num_of_moves);
+     // sortable_move_t new_move_list[MAX_NUM_MOVES];
+      //memcpy(new_move_list, move_list, num_of_moves*sizeof(sortable_move_t));
+     //: sort_incremental_full(move_list,num_of_moves);
     }
     // Get the next move from the move list.
     int local_index = number_of_moves_evaluated++;

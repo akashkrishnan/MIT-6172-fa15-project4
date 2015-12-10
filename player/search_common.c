@@ -212,6 +212,7 @@ void evaluateMove(moveEvaluationResult *result, searchNode *node, move_t mv, mov
   bool blunder = false;  // shoot our own piece
   result->next_node.subpv[0] = 0;
   result->next_node.parent = node;
+  result->next_node.position = node->position;
 
   // Make the move, and get any victim pieces.
   apply_move(&result->next_node, mv);
@@ -354,7 +355,7 @@ void sort_incremental_full(sortable_move_t *move_list, int num_of_moves) {
   for (int j = 0; j < num_of_moves; j++) {
     sortable_move_t insert = move_list[j];
     int hole = j;
-    while (hole > 0 && insert > move_list[hole-1]) {
+    while (hole > 0 && insert < move_list[hole-1]) {
       move_list[hole] = move_list[hole-1];
       hole--;
     }
@@ -364,13 +365,13 @@ void sort_incremental_full(sortable_move_t *move_list, int num_of_moves) {
 
 
 void sort_full (sortable_move_t *move_list, int num_of_moves) {
-  if (num_of_moves < 10) {
+  if (num_of_moves < 100) {
     sort_incremental_full(move_list, num_of_moves);
   }
   else{
     parallel_merge_sort(move_list, 0, num_of_moves-1);
-    mirror_exchange(move_list, 0, num_of_moves-1);
   }
+  mirror_exchange(move_list, 0, num_of_moves-1);
 }
 
 
